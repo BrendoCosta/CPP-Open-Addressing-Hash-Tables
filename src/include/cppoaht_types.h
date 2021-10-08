@@ -1,7 +1,7 @@
 /*
     cppoaht_types.h
     
-    * This header provides the lib's quadratic probing hash table interface.
+    This header provides the lib's quadratic probing hash table interface.
     
     ------------------------------------------------------------------------------
     
@@ -31,6 +31,8 @@
 
 #ifndef CPPOAHT_TYPES
 #define CPPOAHT_TYPES
+
+#include <cstdint>
 
 namespace CPPOAHT {
     

@@ -1,7 +1,7 @@
 /*
     cppoaht_utils.h
     
-    * This header provides some useful functions's interfaces.
+    This header provides some useful functions's interfaces.
     
     ------------------------------------------------------------------------------
     

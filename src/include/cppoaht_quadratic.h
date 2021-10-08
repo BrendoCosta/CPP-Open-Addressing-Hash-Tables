@@ -1,7 +1,7 @@
 /*
     cppoaht_quadratic.h
     
-    * This header provides the lib's quadratic probing hash table interface.
+    This header provides the lib's quadratic probing hash table interface.
     
     ------------------------------------------------------------------------------
     

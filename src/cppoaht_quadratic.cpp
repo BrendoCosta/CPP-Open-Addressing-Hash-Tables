@@ -1,7 +1,7 @@
 /*
     cppoaht_quadratic.cpp
     
-    * This header provides the lib's quadratic probing hash table implementation.
+    This header provides the lib's quadratic probing hash table implementation.
     
     ------------------------------------------------------------------------------
     
@@ -29,8 +29,6 @@
     
 */
 
-#include <cstdio>
-#include <iostream>
 #include "src/include/cppoaht_quadratic.h"
 
 //#define qht_alias(_T) template <typename key_type, typename value_type> _T QuadHashTable<key_type, value_type>
