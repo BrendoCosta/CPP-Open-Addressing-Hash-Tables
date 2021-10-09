@@ -38,7 +38,11 @@ namespace CPPOAHT {
     
     template <typename key_type, typename value_type>
     template <typename hash_function_type>
-    QuadHashTable<key_type, value_type>::QuadHashTable(hash_function_type (*hashFn)(key_type, value_type), int initialSize) {
+    QuadHashTable<key_type, value_type>::QuadHashTable( hash_function_type (*hashFn)(key_type, value_type),
+                                                        int initial_size,
+                                                        bool enable_entry_caching,
+                                                        bool enable_table_caching
+                                                      ) {
         
         // TODO
         

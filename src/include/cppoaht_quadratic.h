@@ -43,11 +43,11 @@ namespace CPPOAHT {
             
             enum { FULL = 1, EMPTY = 0, DELETED = -1 };
             
-            CPPOAHT::Types::int_type size;
-            CPPOAHT::Types::int_type keys;
-            CPPOAHT::Types::int_type residues;
+            CPPOAHT::Types::default_int_type size;
+            CPPOAHT::Types::default_int_type keys;
+            CPPOAHT::Types::default_int_type residues;
             
-            int (*hashFunction)(key_type, value_type);
+            CPPOAHT::Types::default_int_type (*hashFunction)(key_type, value_type);
             
             //Entry <key_type, value_type> *entries;
             
@@ -62,7 +62,11 @@ namespace CPPOAHT {
         public:
             
             template <typename hash_function_type>
-            QuadHashTable(hash_function_type (*hashFn)(key_type, value_type), int initialSize);
+            QuadHashTable(  hash_function_type (*hashFn)(key_type, value_type),
+                            int initial_size,
+                            bool enable_entry_caching = true,
+                            bool enable_table_caching = true
+                         );
             
             template <typename hash_function_type>
             void setHashFuncTypeFunction(hash_function_type (*hashFn)(key_type, value_type));
