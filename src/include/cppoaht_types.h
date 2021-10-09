@@ -40,7 +40,7 @@ namespace CPPOAHT {
         
         // Signed integers
         
-        using int_type = int64_t;
+        using default_int_type = int64_t;
         
         // Unsigned integers
 
