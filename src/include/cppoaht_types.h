@@ -29,8 +29,8 @@
     
 */
 
-#ifndef CPPOAHT_TYPES
-#define CPPOAHT_TYPES
+#ifndef CPPOAHT_TYPES_H
+#define CPPOAHT_TYPES_H
 
 #include <cstdint>
 
@@ -47,4 +47,4 @@ namespace CPPOAHT {
     }
 }
 
-#endif // CPPOAHT_TYPES
+#endif // CPPOAHT_TYPES_H
