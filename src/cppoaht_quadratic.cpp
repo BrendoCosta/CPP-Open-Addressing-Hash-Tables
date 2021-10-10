@@ -39,19 +39,42 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     template <typename hash_function_type>
     QuadHashTable<key_type, value_type>::QuadHashTable( hash_function_type (*hashFn)(key_type, value_type),
-                                                        int initial_size,
-                                                        bool enable_entry_caching,
+                                                        uintmax_t initial_size,
+                                                        bool enable_key_caching,
                                                         bool enable_table_caching
                                                       ) {
         
-        // TODO
+        _entries = new CPPOAHT::Entry<key_type, value_type>*[initial_size];
+        
+        for (uintmax_t i = 0; i < initial_size; i++) {
+            
+            _entries[i] = new CPPOAHT::Entry<key_type, value_type>(enable_key_caching);
+            
+        }
+        
+        _size = initial_size;
         
     }
     
     /* --- */
     
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::tableInsert(key_type key, value_type value) { 
+    QuadHashTable<key_type, value_type>::~QuadHashTable() { 
+        
+        for (uintmax_t i = 0; i < _size; i++) {
+            
+            _entries[i]->~Entry();
+            
+        }
+        
+        delete[] _entries;
+        
+    }
+    
+    /* --- */
+    
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>::_insert(key_type key, value_type value) { 
         
         return;
         

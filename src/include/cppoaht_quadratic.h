@@ -29,10 +29,11 @@
     
 */
 
-#ifndef CPPOAHT_QUADRATIC
-#define CPPOAHT_QUADRATIC
+#ifndef CPPOAHT_QUADRATIC_H
+#define CPPOAHT_QUADRATIC_H
 
 #include "src/include/cppoaht_types.h"
+#include "src/include/cppoaht_entry.h"
 
 namespace CPPOAHT {
     
@@ -41,32 +42,32 @@ namespace CPPOAHT {
         
         private:
             
-            enum { FULL = 1, EMPTY = 0, DELETED = -1 };
+            uintmax_t _size;
+            uintmax_t _keys;
+            uintmax_t _residues;
             
-            CPPOAHT::Types::default_int_type size;
-            CPPOAHT::Types::default_int_type keys;
-            CPPOAHT::Types::default_int_type residues;
+            CPPOAHT::Types::default_int_type (*_hashFunction)(key_type, value_type);
             
-            CPPOAHT::Types::default_int_type (*hashFunction)(key_type, value_type);
+            CPPOAHT::Entry<key_type, value_type>** _entries;
             
-            //Entry <key_type, value_type> *entries;
+            void _insert(key_type key, value_type value);
             
-            void tableInsert(key_type key, value_type value);
+            void _rehash(key_type key, value_type value);
             
-            void tableRehash(key_type key, value_type value);
+            void _remove(key_type key);
             
-            void tableRemove(key_type key);
-            
-            void tableFind(key_type key);
+            void _find(key_type key);
 
         public:
             
             template <typename hash_function_type>
             QuadHashTable(  hash_function_type (*hashFn)(key_type, value_type),
-                            int initial_size,
-                            bool enable_entry_caching = true,
+                            uintmax_t initial_size,
+                            bool enable_key_caching = true,
                             bool enable_table_caching = true
                          );
+                         
+            ~QuadHashTable();
             
             template <typename hash_function_type>
             void setHashFuncTypeFunction(hash_function_type (*hashFn)(key_type, value_type));
@@ -83,4 +84,4 @@ namespace CPPOAHT {
 
 }
 
-#endif // CPPOAHT_QUADRATIC
+#endif // CPPOAHT_QUADRATIC_H
