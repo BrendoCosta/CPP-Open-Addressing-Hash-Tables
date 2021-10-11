@@ -30,6 +30,8 @@
 */
 
 #include "src/include/cppoaht_quadratic.h"
+#include <cstdio>
+#include <iostream>
 
 //#define qht_alias(_T) template <typename key_type, typename value_type> _T QuadHashTable<key_type, value_type>
 //qht_alias(void)::insert(key_type key, value_type value) { ... }
@@ -44,15 +46,15 @@ namespace CPPOAHT {
                                                         bool enable_table_caching
                                                       ) {
         
-        _entries = new CPPOAHT::Entry<key_type, value_type>*[initial_size];
+        this->entries = new CPPOAHT::Entry<key_type, value_type>*[initial_size];
         
         for (uintmax_t i = 0; i < initial_size; i++) {
             
-            _entries[i] = new CPPOAHT::Entry<key_type, value_type>(enable_key_caching);
+            this->entries[i] = new CPPOAHT::Entry<key_type, value_type>(enable_key_caching);
             
         }
         
-        _size = initial_size;
+        this->size = initial_size;
         
     }
     
@@ -61,13 +63,13 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::~QuadHashTable() { 
         
-        for (uintmax_t i = 0; i < _size; i++) {
+        for (uintmax_t i = 0; i < size; i++) {
             
-            _entries[i]->~Entry();
+            this->entries[i]->~Entry();
             
         }
         
-        delete[] _entries;
+        delete[] this->entries;
         
     }
     

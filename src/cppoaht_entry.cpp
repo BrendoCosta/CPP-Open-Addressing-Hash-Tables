@@ -39,11 +39,11 @@ namespace CPPOAHT {
         
         if (enable_key_caching) {
             
-            _caching = true;
+            this->caching = true;
             
         } else {
             
-            _caching = false;
+            this->caching = false;
             
         }
         
@@ -54,9 +54,9 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::~Entry() {
         
-        delete _key;
+        delete this->key;
         
-        delete _value;
+        delete this->value;
         
     }
     
@@ -65,9 +65,9 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     key_type Entry<key_type, value_type>::get_key(void) { 
         
-        if (_caching) {
+        if (caching) {
             
-            return *_key;
+            return *(this->key);
             
         } else {
             
@@ -80,14 +80,14 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     value_type Entry<key_type, value_type>::get_value(void) { 
         
-        return *_value;
+        return *(this->value);
         
     }
     
     template <typename key_type, typename value_type>
     uint8_t Entry<key_type, value_type>::get_state(void) { 
         
-        return _state;
+        return this->state;
         
     }
     
@@ -98,15 +98,15 @@ namespace CPPOAHT {
         
         // We are going to store the key only if the key caching is enabled
         
-        if (_caching) {
+        if (this->caching) {
             
             // Memory allocation for key's value if necessary
             
-            if (_state == EMPTY) _key = new key_type;
+            if (this->state == EMPTY) this->key = new key_type;
             
             // Update entry's key value
         
-            *_key = new_key;
+            *(this->key) = new_key;
             
         }
         
@@ -119,11 +119,11 @@ namespace CPPOAHT {
         
         // Memory allocation for value if necessary
         
-        if (_state == EMPTY) _value = new value_type;
+        if (this->state == EMPTY) this->value = new value_type;
         
         // Update entry's value
         
-        *_value = new_value;
+        *(this->value) = new_value;
         
     }
     
@@ -132,7 +132,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void Entry<key_type, value_type>::set_state(uint8_t new_state) { 
         
-        _state = new_state;
+        this->state = new_state;
         
     }
     

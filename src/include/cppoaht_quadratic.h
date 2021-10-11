@@ -42,13 +42,13 @@ namespace CPPOAHT {
         
         private:
             
-            uintmax_t _size;
-            uintmax_t _keys;
-            uintmax_t _residues;
+            uintmax_t size;
+            uintmax_t keys;
+            uintmax_t residues;
             
             CPPOAHT::Types::default_int_type (*_hashFunction)(key_type, value_type);
             
-            CPPOAHT::Entry<key_type, value_type>** _entries;
+            CPPOAHT::Entry<key_type, value_type>** entries;
             
             void _insert(key_type key, value_type value);
             

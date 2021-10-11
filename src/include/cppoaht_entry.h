@@ -43,10 +43,10 @@ namespace CPPOAHT {
             
             enum { FULL = 2, EMPTY = 1, DELETED = 0 };
             
-            key_type* _key;
-            value_type* _value;
-            uint8_t _state = EMPTY;
-            bool _caching;
+            key_type* key;
+            value_type* value;
+            uint8_t state = EMPTY;
+            bool caching;
 
         public:
             
