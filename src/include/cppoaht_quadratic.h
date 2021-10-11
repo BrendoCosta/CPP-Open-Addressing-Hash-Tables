@@ -46,22 +46,26 @@ namespace CPPOAHT {
             uintmax_t keys;
             uintmax_t residues;
             
-            CPPOAHT::Types::default_int_type (*_hashFunction)(key_type, value_type);
+            bool key_caching;
+            bool table_caching;
+            
+            uintmax_t (*hashFunction)(key_type);
             
             CPPOAHT::Entry<key_type, value_type>** entries;
             
             void _insert(key_type key, value_type value);
             
-            void _rehash(key_type key, value_type value);
+            void _rehash(uintmax_t new_size);
             
             void _remove(key_type key);
             
             void _find(key_type key);
+            
+            void _update_residues(uintmax_t size);
 
         public:
             
-            template <typename hash_function_type>
-            QuadHashTable(  hash_function_type (*hashFn)(key_type, value_type),
+            QuadHashTable(  uintmax_t (*hashFn)(key_type),
                             uintmax_t initial_size,
                             bool enable_key_caching = true,
                             bool enable_table_caching = true
@@ -69,16 +73,15 @@ namespace CPPOAHT {
                          
             ~QuadHashTable();
             
-            template <typename hash_function_type>
-            void setHashFuncTypeFunction(hash_function_type (*hashFn)(key_type, value_type));
-            
             void insert(key_type key, value_type value);
             
             void remove(key_type key);
             
             void find(key_type key);
             
-            value_type iterate(void);
+            // Debug
+            
+            void display(void);
             
     };
 
