@@ -39,7 +39,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     class Entry {
         
-        private:
+        public:
             
             enum { FULL = 2, EMPTY = 1, DELETED = 0 };
             
@@ -47,8 +47,6 @@ namespace CPPOAHT {
             value_type* value;
             uint8_t state = EMPTY;
             bool caching;
-
-        public:
             
             // Getting's functions
             
