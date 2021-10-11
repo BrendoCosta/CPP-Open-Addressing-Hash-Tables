@@ -29,8 +29,8 @@
     
 */
 
-#ifndef CPPOAHT_UTILS
-#define CPPOAHT_UTILS
+#ifndef CPPOAHT_UTILS_H
+#define CPPOAHT_UTILS_H
 
 namespace CPPOAHT {
     
@@ -42,4 +42,4 @@ namespace CPPOAHT {
     
 }
 
-#endif // CPPOAHT_UTILS
+#endif // CPPOAHT_UTILS_H
