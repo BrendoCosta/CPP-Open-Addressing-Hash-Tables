@@ -37,15 +37,13 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::Entry(bool enable_key_caching) {
         
-        if (enable_key_caching) {
+        if (enable_key_caching)
             
             this->caching = true;
-            
-        } else {
+        
+        else
             
             this->caching = false;
-            
-        }
         
     }
     
@@ -65,22 +63,26 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     key_type Entry<key_type, value_type>::get_key(void) { 
         
-        if (caching) {
+        if (this->get_state() == FULL && this->caching)
             
             return *(this->key);
             
-        } else {
+        else
             
-            // TODO
-            
-        }
+            return 0;
         
     }
     
     template <typename key_type, typename value_type>
     value_type Entry<key_type, value_type>::get_value(void) { 
         
-        return *(this->value);
+        if (this->get_state() == FULL && this->caching)
+            
+            return *(this->value);
+            
+        else
+            
+            return 0;
         
     }
     
