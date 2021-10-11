@@ -30,8 +30,6 @@
 */
 
 #include "src/include/cppoaht_quadratic.h"
-#include <cstdio>
-#include <iostream>
 
 //#define qht_alias(_T) template <typename key_type, typename value_type> _T QuadHashTable<key_type, value_type>
 //qht_alias(void)::insert(key_type key, value_type value) { ... }
