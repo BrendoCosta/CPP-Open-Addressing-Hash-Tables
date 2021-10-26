@@ -5,13 +5,14 @@ QuadraticProbing.project
 ToKeep
 QuadraticProbing.txt
 main.cpp
+compile_flags.txt
 
 /src/bckp.old
 
 # Directories
 
 /Debug/
-/doc/
+/Release/
 /doc/
 
 # Filetypes

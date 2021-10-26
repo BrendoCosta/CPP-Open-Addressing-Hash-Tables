@@ -29,10 +29,10 @@
     
 */
 
-#include "src/include/cppoaht_quadratic.h"
+#include "src/include/quadratic.h"
 
-#include "src/include/cppoaht_utils.h"
-#include "src/cppoaht_utils.cpp"
+#include "src/include/utils.h"
+#include "src/utils.cpp"
 
 #include <cstdio>
 #include <iostream>
@@ -43,30 +43,28 @@
 
 namespace CPPOAHT {
     
+    /* ---------------------------------------------------------------------------
+     * 
+     *                  Constructor's and destructor's methods
+     * 
+     * ---------------------------------------------------------------------------
+    */
+    
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::QuadHashTable( uintmax_t (*hashFn)(key_type),
                                                         uintmax_t initial_size,
-                                                        bool enable_key_caching,
-                                                        bool enable_table_caching
+                                                        bool entry_caching
                                                       ) {
         
-        // Only prime numbers table size approach
+        // Prime numbers table size approach
         
         if (!isPrime(initial_size))
             
             initial_size = nextPrime(initial_size);
         
-        // Entries's memory allocation                                                   
+        // Entries's and indexes memory allocation                                                   
                                                           
-        this->entries = new CPPOAHT::Entry<key_type, value_type>*[initial_size];
-        
-        for (uintmax_t i = 0; i < initial_size; i++) {
-            
-            this->entries[i] = new CPPOAHT::Entry<key_type, value_type>(enable_key_caching);
-            
-            this->entries[i]->set_state(CPPOAHT::Entry<key_type, value_type>::EMPTY);
-            
-        }
+        this->entries = new CPPOAHT::Entry<key_type, value_type>[initial_size];
         
         // Table's size and residues assignments
         
@@ -74,9 +72,8 @@ namespace CPPOAHT {
         this->_update_residues(initial_size);
         
         // Caching assignments
-        
-        this->key_caching = enable_key_caching;
-        this->table_caching = enable_table_caching;
+
+        this->entry_caching = entry_caching;
         
         // Hash function assignments
         
@@ -91,7 +88,9 @@ namespace CPPOAHT {
         
         for (uintmax_t i = 0; i < size; i++) {
             
-            this->entries[i]->~Entry();
+            delete this->entries[i].key;
+            
+            delete this->entries[i].value;
             
         }
         
@@ -99,35 +98,96 @@ namespace CPPOAHT {
         
     }
     
-    /* --- */
+    /* ---------------------------------------------------------------------------
+     * 
+     *                              Private functions
+     * 
+     * ---------------------------------------------------------------------------
+    */
     
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_insert(key_type key, value_type value) { 
+    void QuadHashTable<key_type, value_type>::_insert(key_type key, value_type value) {
         
         uintmax_t position = hashFunction(key);
         
         for (uintmax_t i = 0; i < this->residues; i++) {
             
+            // Position probing
+            
             position = ( position + (i * i) ) % this->size;
             
-            if ( entries[position]->get_state() == CPPOAHT::Entry<key_type, value_type>::EMPTY ||
-                 entries[position]->get_state() == CPPOAHT::Entry<key_type, value_type>::DELETED) {
+            if (this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC
+                || this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::EMPTY) {
+                
+                // Key and value memory allocation if necessary
+                    
+                if (this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
+                    
+                    this->entries[position].key   = new key_type;
+                    this->entries[position].value = new value_type;
+                    
+                }
                 
                 // Key and value assignments
                 
-                entries[position]->set_value(value);
-
-                if (entries[position]->caching)
-                    
-                    entries[position]->set_key(key);
+                *(this->entries[position].key)   = key;
+                *(this->entries[position].value) = value;
                 
                 // Entry's state update
                 
-                entries[position]->set_state(CPPOAHT::Entry<key_type, value_type>::FULL);
+                this->entries[position].state = CPPOAHT::Entry<key_type, value_type>::FULL;
                 
                 // Table's key count update
                 
-                this->keys += 1;
+                this->keys_count += 1;
+                
+                return;
+                
+            }
+            
+        }
+        
+        return;
+        
+    }
+    
+    /* --- */
+    
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>::_rehash(uintmax_t new_size) {
+        
+        
+        
+    }
+    
+    /* --- */
+    
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>::_remove(key_type key) {
+        
+        uintmax_t position = hashFunction(key);
+        
+        for (uintmax_t i = 0; i < this->residues; i++) {
+            
+            // Position probing
+            
+            position = ( position + (i * i) ) % this->size;
+            
+            // Key and value memory deallocation
+            
+            if (this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::FULL
+                && *(this->entries[position].key) == key) {
+                
+                delete this->entries[position].key;
+                delete this->entries[position].value;
+                    
+                // Entry's state update
+                
+                this->entries[position].state = CPPOAHT::Entry<key_type, value_type>::UNALLOC;
+                
+                // Table's key count update
+                
+                this->keys_count -= 1;
                 
                 return;
                 
@@ -144,11 +204,16 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::_update_residues(uintmax_t size) { 
         
-        this->residues = ( (size + 1) / 2 );
+        this->residues = ( ( this->size + 1 ) / 2 );
         
     }
     
-    /* --- */
+    /* ---------------------------------------------------------------------------
+     * 
+     *                              Public functions
+     * 
+     * ---------------------------------------------------------------------------
+    */
     
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::insert(key_type key, value_type value) { 
@@ -168,13 +233,13 @@ namespace CPPOAHT {
         
         for (uintmax_t i = 0; i < this->size; i++) {
             
-            std::cout << std::right << std::setw(2) << i << std::setw(4) << " " << std::left << std::setw(4) << entries[i]->get_state() << std::setw(7) << entries[i]->get_key() << entries[i]->get_value() << std::endl;
+            if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL)
+                
+                std::cout << std::right << std::setw(2) << i << std::setw(4) << " " << std::left << std::setw(4) << unsigned(this->entries[i].state) << std::setw(7) << *(this->entries[i].key) << *(this->entries[i].value) << std::endl;
             
         }
         
         std::cout << "\nLOAD FACTOR: " << "ND" << std::endl;
-        
-        //this->_insert(key, value);
         
         return;
         

@@ -1,5 +1,5 @@
 /*
-    cppoaht_entry.h
+    cppoaht_entry.cpp
     
     TODO
     
@@ -29,44 +29,25 @@
     
 */
 
-#ifndef CPPOAHT_ENTRY_H
-#define CPPOAHT_ENTRY_H
-
-#include "src/include/cppoaht_types.h"
+#include "src/include/types.h"
+#include "src/include/entry.h"
 
 namespace CPPOAHT {
     
+    /* ---------------------------------------------------------------------------
+     * 
+     *                          Destructor's methods
+     * 
+     * ---------------------------------------------------------------------------
+    */
+    
     template <typename key_type, typename value_type>
-    class Entry {
+    Entry<key_type, value_type>::~Entry() {
         
-        public:
-            
-            enum { FULL = 2, EMPTY = 1, DELETED = 0 };
-            
-            key_type* key;
-            value_type* value;
-            uint8_t state = EMPTY;
-            bool caching;
-            
-            // Getting's functions
-            
-            key_type get_key(void);
-            value_type get_value(void);
-            uint8_t get_state(void);
-            
-            // Setting's functions
-            
-            void set_key(key_type new_key);
-            void set_value(value_type new_value);
-            void set_state(uint8_t new_state);
-            
-            // Constructor and Destructor methods
-            
-            Entry(bool enable_key_caching = true);
-            
-            ~Entry();
-    };
-
+        //delete this->key;
+        
+        //delete this->value;
+        
+    }
+    
 }
-
-#endif // CPPOAHT_ENTRY_H

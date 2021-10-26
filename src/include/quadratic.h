@@ -32,26 +32,34 @@
 #ifndef CPPOAHT_QUADRATIC_H
 #define CPPOAHT_QUADRATIC_H
 
-#include "src/include/cppoaht_types.h"
-#include "src/include/cppoaht_entry.h"
+#include "src/include/types.h"
+#include "src/include/entry.h"
 
 namespace CPPOAHT {
     
     template <typename key_type, typename value_type>
     class QuadHashTable {
         
+        public:
+            
+            QuadHashTable(  uintmax_t (*hashFn)(key_type),
+                            uintmax_t initial_size,
+                            bool entry_caching = true
+                         );
+                         
+            ~QuadHashTable();
+            
         private:
             
             uintmax_t size;
-            uintmax_t keys;
+            uintmax_t keys_count;
             uintmax_t residues;
             
-            bool key_caching;
-            bool table_caching;
+            bool entry_caching;
             
             uintmax_t (*hashFunction)(key_type);
             
-            CPPOAHT::Entry<key_type, value_type>** entries;
+            CPPOAHT::Entry<key_type, value_type>* entries;
             
             void _insert(key_type key, value_type value);
             
@@ -64,14 +72,6 @@ namespace CPPOAHT {
             void _update_residues(uintmax_t size);
 
         public:
-            
-            QuadHashTable(  uintmax_t (*hashFn)(key_type),
-                            uintmax_t initial_size,
-                            bool enable_key_caching = true,
-                            bool enable_table_caching = true
-                         );
-                         
-            ~QuadHashTable();
             
             void insert(key_type key, value_type value);
             
