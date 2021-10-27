@@ -105,9 +105,9 @@ $(TARGET_DIR)/$(TARGET_FILE) : $(OBJ_FILES)
 	@ echo "@ BUILD: Compressing object files..."
 	$(AR) $(AR_FLAGS) $@ $^
 	
-$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDE_DIR)/%.h
 	@ echo "@ BUILD: Compiling C++ source code..."
-	$(CXX) $(CXX_FLAGS) -c $^ -o $@
+	$(CXX) $(CXX_FLAGS) -c $< -o $@
 
 clean :
 	@ echo "@ BUILD: Cleaning..."
