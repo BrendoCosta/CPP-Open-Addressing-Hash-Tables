@@ -42,4 +42,6 @@ namespace CPPOAHT {
     
 }
 
+#include "../utils.cpp"
+
 #endif // CPPOAHT_UTILS_H

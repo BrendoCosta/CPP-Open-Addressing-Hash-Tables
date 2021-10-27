@@ -29,14 +29,15 @@
     
 */
 
-#include "src/include/quadratic.h"
-
-#include "src/include/utils.h"
-#include "src/utils.cpp"
+#include "include/quadratic.h"
+#include "include/utils.h"
 
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
+
+#ifndef CPPOAHT_QUADRATIC_IMPL
+#define CPPOAHT_QUADRATIC_IMPL
 
 //#define qht_alias(_T) template <typename key_type, typename value_type> _T QuadHashTable<key_type, value_type>
 //qht_alias(void)::insert(key_type key, value_type value) { ... }
@@ -246,3 +247,5 @@ namespace CPPOAHT {
     }
     
 }
+
+#endif // CPPOAHT_QUADRATIC_IMPL

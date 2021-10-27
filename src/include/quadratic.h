@@ -32,8 +32,8 @@
 #ifndef CPPOAHT_QUADRATIC_H
 #define CPPOAHT_QUADRATIC_H
 
-#include "src/include/types.h"
-#include "src/include/entry.h"
+#include "types.h"
+#include "entry.h"
 
 namespace CPPOAHT {
     
@@ -86,5 +86,7 @@ namespace CPPOAHT {
     };
 
 }
+
+#include "../quadratic.cpp"
 
 #endif // CPPOAHT_QUADRATIC_H

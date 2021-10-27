@@ -6,6 +6,8 @@ ToKeep
 QuadraticProbing.txt
 main.cpp
 compile_flags.txt
+Makefile.OLD
+test
 
 /src/bckp.old
 
@@ -13,6 +15,7 @@ compile_flags.txt
 
 /Debug/
 /Release/
+/build/
 /doc/
 
 # Filetypes

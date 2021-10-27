@@ -29,8 +29,6 @@
     
 */
 
-#include "src/include/utils.h"
-
 namespace CPPOAHT {
     
     template <typename integer_type>

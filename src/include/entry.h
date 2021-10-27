@@ -32,7 +32,7 @@
 #ifndef CPPOAHT_ENTRY_H
 #define CPPOAHT_ENTRY_H
 
-#include "src/include/types.h"
+#include "types.h"
 
 namespace CPPOAHT {
     
@@ -64,5 +64,7 @@ namespace CPPOAHT {
     };
 
 }
+
+#include "../entry.cpp"
 
 #endif // CPPOAHT_ENTRY_H

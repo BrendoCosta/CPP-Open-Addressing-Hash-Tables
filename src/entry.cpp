@@ -29,8 +29,11 @@
     
 */
 
-#include "src/include/types.h"
-#include "src/include/entry.h"
+#include "include/types.h"
+#include "include/entry.h"
+
+#ifndef CPPOAHT_ENTRY_IMPL
+#define CPPOAHT_ENTRY_IMPL
 
 namespace CPPOAHT {
     
@@ -51,3 +54,5 @@ namespace CPPOAHT {
     }
     
 }
+
+#endif // CPPOAHT_ENTRY_IMPL
