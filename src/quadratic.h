@@ -36,6 +36,7 @@
 #include "entry.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
@@ -57,9 +58,9 @@ namespace CPPOAHT {
 
         private:
 
-            CPPOAHT::uindexmax_t size;
-            CPPOAHT::uindexmax_t keys_count;
-            CPPOAHT::uindexmax_t residues;
+            CPPOAHT::uindexmax_t size       = 0;
+            CPPOAHT::uindexmax_t keys_count = 0;
+            CPPOAHT::uindexmax_t residues   = 0;
 
             bool entry_caching;
 
@@ -75,9 +76,11 @@ namespace CPPOAHT {
 
             void _find(key_type key);
 
-            void _update_residues(CPPOAHT::uindexmax_t size);
+            void _update_residues(CPPOAHT::uindexmax_t new_size);
 
         public:
+
+            float loadFactor(void);
 
             void insert(key_type key, value_type value);
 
@@ -130,7 +133,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::~QuadHashTable() {
 
-        for (CPPOAHT::uindexmax_t i = 0; i < size; i++) {
+        for (CPPOAHT::uindexmax_t i = 0; i < this->size; i++) {
 
             delete this->entries[i].key;
 
@@ -149,34 +152,35 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::_insert(key_type key, value_type value) {
 
-        CPPOAHT::uindexmax_t position = hashFunction(key);
+        CPPOAHT::uindexmax_t hashPosition = hashFunction(key);
+        CPPOAHT::uindexmax_t probingPosition;
 
         for (CPPOAHT::uindexmax_t i = 0; i < this->residues; i++) {
 
             // Position probing
 
-            position = ( position + (i * i) ) % this->size;
+            probingPosition = (hashPosition + (i * i)) % this->size;
 
-            if (this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC
-                || this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::EMPTY) {
+            if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC
+                || this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::EMPTY) {
 
                 // Key and value memory allocation if necessary
 
-                if (this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
+                if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
 
-                    this->entries[position].key   = new key_type;
-                    this->entries[position].value = new value_type;
+                    this->entries[probingPosition].key   = new key_type;
+                    this->entries[probingPosition].value = new value_type;
 
                 }
 
                 // Key and value assignments
 
-                *(this->entries[position].key)   = key;
-                *(this->entries[position].value) = value;
+                *(this->entries[probingPosition].key)   = key;
+                *(this->entries[probingPosition].value) = value;
 
                 // Entry's state update
 
-                this->entries[position].state = CPPOAHT::Entry<key_type, value_type>::FULL;
+                this->entries[probingPosition].state = CPPOAHT::Entry<key_type, value_type>::FULL;
 
                 // Table's key count update
 
@@ -195,7 +199,43 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::_rehash(CPPOAHT::uindexmax_t new_size) {
 
+        std::cout << "\nREHASH!" << std::endl;
 
+        // New entries array allocation
+
+        CPPOAHT::Entry<key_type, value_type> *newEntries;
+        newEntries = new CPPOAHT::Entry<key_type, value_type>[new_size];
+
+        // Copying
+
+        std::copy(
+            this->entries,
+            this->entries + this->size,
+            newEntries
+        );
+
+        // Control variables update
+
+        this->keys_count = 0;
+        this->size = new_size;
+        this->_update_residues(new_size);
+
+        this->entries = newEntries;
+
+        for (CPPOAHT::uindexmax_t i = 0; i < this->size; i++) {
+
+            if (this->entries[i].state
+                == CPPOAHT::Entry<key_type, value_type>::FULL) {
+
+                this->entries[i].state = CPPOAHT::Entry<key_type, value_type>::UNALLOC;
+
+                this->_insert(*(this->entries[i].key), *(this->entries[i].value));
+
+            }
+
+        }
+
+        std::cout << "\nFIM DO REHASH!" << std::endl;
 
     }
 
@@ -237,9 +277,9 @@ namespace CPPOAHT {
     }
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_update_residues(CPPOAHT::uindexmax_t size) {
+    void QuadHashTable<key_type, value_type>::_update_residues(CPPOAHT::uindexmax_t new_size) {
 
-        this->residues = ( ( this->size + 1 ) / 2 );
+        this->residues = ( ( new_size + 1 ) / 2 );
 
     }
 
@@ -248,9 +288,27 @@ namespace CPPOAHT {
     // -------------------------------------------------------------------------
 
     template <typename key_type, typename value_type>
+    float QuadHashTable<key_type, value_type>::loadFactor(void) {
+
+        return ( this->keys_count / ( (float) this->size) );
+
+    }
+
+    template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::insert(key_type key, value_type value) {
 
         this->_insert(key, value);
+
+        if (this->loadFactor() > 0.5) {
+
+            CPPOAHT::uindexmax_t new_size = nextPrime(this->size * 2);
+
+            this->_update_residues(new_size);
+
+            this->_rehash(new_size);
+
+
+        }
 
         return;
 
@@ -263,13 +321,18 @@ namespace CPPOAHT {
 
         for (CPPOAHT::uindexmax_t i = 0; i < this->size; i++) {
 
-            if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL)
+            if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL) {
 
                 std::cout << std::right << std::setw(2) << i << std::setw(4) << " " << std::left << std::setw(4) << unsigned(this->entries[i].state) << std::setw(7) << *(this->entries[i].key) << *(this->entries[i].value) << std::endl;
 
+            } else {
+
+                std::cout << std::right << std::setw(2) << i << std::setw(4) << " " << std::left << std::setw(4) << unsigned(this->entries[i].state) << std::setw(7) << 0 << 0 << std::endl;
+
+            }
         }
 
-        std::cout << "\nLOAD FACTOR: " << "ND" << std::endl;
+        std::cout << "\nLOAD FACTOR: " << this->loadFactor() << std::endl;
 
         return;
 
