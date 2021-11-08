@@ -134,9 +134,7 @@ namespace CPPOAHT {
 
         for (CPPOAHT::index_t i = 0; i < this->size; i++) {
 
-            delete this->entries[i].key;
-
-            delete this->entries[i].value;
+            this->entries[i].dealloc();
 
         }
 
@@ -167,8 +165,7 @@ namespace CPPOAHT {
 
                 if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
 
-                    this->entries[probingPosition].key   = new key_type;
-                    this->entries[probingPosition].value = new value_type;
+                    this->entries[probingPosition].alloc();
 
                 }
 

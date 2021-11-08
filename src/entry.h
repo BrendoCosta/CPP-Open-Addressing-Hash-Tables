@@ -62,16 +62,12 @@ namespace CPPOAHT {
             value_type* value;
             uint8_t     state = UNALLOC;
 
+            void alloc(void);
+            void dealloc(void);
+
     };
 
     /* ---------------------------------------------------------------------- */
-
-    /* ---------------------------------------------------------------------------
-     *
-     *                          Destructor's methods
-     *
-     * ---------------------------------------------------------------------------
-    */
 
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::~Entry() {
@@ -79,6 +75,22 @@ namespace CPPOAHT {
         //delete this->key;
 
         //delete this->value;
+
+    }
+
+    template <typename key_type, typename value_type>
+    void Entry<key_type, value_type>::alloc(void) {
+
+        this->key   = new key_type;
+        this->value = new value_type;
+
+    }
+
+    template <typename key_type, typename value_type>
+    void Entry<key_type, value_type>::dealloc(void) {
+
+        delete this->key;
+        delete this->value;
 
     }
 
