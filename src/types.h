@@ -36,7 +36,8 @@
 
 namespace CPPOAHT {
 
-    using uindexmax_t = uintmax_t;
+    using index_t = uintmax_t;
+    using float_t = float;
 }
 
 #endif // CPPOAHT_TYPES_H
