@@ -94,6 +94,8 @@ namespace CPPOAHT {
             delete this->key;
             delete this->value;
 
+            this->state = UNALLOC;
+
         }
 
     }

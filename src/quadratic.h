@@ -253,10 +253,6 @@ namespace CPPOAHT {
 
                 this->entries[probingPosition].dealloc();
 
-                // Entry's state update
-
-                this->entries[probingPosition].state = CPPOAHT::Entry<key_type, value_type>::UNALLOC;
-
                 // Table's key count update
 
                 this->keys_count -= 1;
