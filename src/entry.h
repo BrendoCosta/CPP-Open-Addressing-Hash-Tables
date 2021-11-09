@@ -89,8 +89,12 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void Entry<key_type, value_type>::dealloc(void) {
 
-        delete this->key;
-        delete this->value;
+        if (this->state != UNALLOC) {
+
+            delete this->key;
+            delete this->value;
+
+        }
 
     }
 

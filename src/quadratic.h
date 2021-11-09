@@ -134,12 +134,7 @@ namespace CPPOAHT {
 
         for (CPPOAHT::index_t i = 0; i < this->size; i++) {
 
-            if (this->entries[i].state
-                != CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
-
-                this->entries[i].dealloc();
-
-            }
+            this->entries[i].dealloc();
 
         }
 
