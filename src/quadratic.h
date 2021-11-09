@@ -134,7 +134,12 @@ namespace CPPOAHT {
 
         for (CPPOAHT::index_t i = 0; i < this->size; i++) {
 
-            this->entries[i].dealloc();
+            if (this->entries[i].state
+                != CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
+
+                this->entries[i].dealloc();
+
+            }
 
         }
 
@@ -219,6 +224,8 @@ namespace CPPOAHT {
 
         this->_updateSize(new_size);
 
+        // Reinsert
+
         for (CPPOAHT::index_t i = 0; i < old_size; i++) {
 
             if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL) {
@@ -235,25 +242,25 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::_remove(key_type key) {
 
-        CPPOAHT::index_t position = hashFunction(key);
+        CPPOAHT::index_t hashPosition = hashFunction(key);
+        CPPOAHT::index_t probingPosition;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
             // Position probing
 
-            position = ( position + (i * i) ) % this->size;
+            probingPosition = (hashPosition + (i * i)) % this->size;
 
-            // Key and value memory deallocation
+            if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::FULL
+                && *(this->entries[probingPosition].key) == key) {
 
-            if (this->entries[position].state == CPPOAHT::Entry<key_type, value_type>::FULL
-                && *(this->entries[position].key) == key) {
+                // Key and value memory deallocation
 
-                delete this->entries[position].key;
-                delete this->entries[position].value;
+                this->entries[probingPosition].dealloc();
 
                 // Entry's state update
 
-                this->entries[position].state = CPPOAHT::Entry<key_type, value_type>::UNALLOC;
+                this->entries[probingPosition].state = CPPOAHT::Entry<key_type, value_type>::UNALLOC;
 
                 // Table's key count update
 
@@ -298,6 +305,15 @@ namespace CPPOAHT {
             this->_rehash(this->size * 2);
 
         }
+
+        return;
+
+    }
+
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>::remove(key_type key) {
+
+        this->_remove(key);
 
         return;
 
