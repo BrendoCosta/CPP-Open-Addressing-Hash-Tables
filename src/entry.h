@@ -65,6 +65,8 @@ namespace CPPOAHT {
             void alloc(void);
             void dealloc(void);
 
+            bool assign(key_type key, value_type value);
+
     };
 
     /* ---------------------------------------------------------------------- */
@@ -72,17 +74,21 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::~Entry() {
 
-        //delete this->key;
-
-        //delete this->value;
+        this->dealloc();
 
     }
 
     template <typename key_type, typename value_type>
     void Entry<key_type, value_type>::alloc(void) {
 
-        this->key   = new key_type;
-        this->value = new value_type;
+        if (this->state == UNALLOC) {
+
+            this->key   = new key_type;
+            this->value = new value_type;
+
+            this->state = EMPTY;
+
+        }
 
     }
 
@@ -95,6 +101,34 @@ namespace CPPOAHT {
             delete this->value;
 
             this->state = UNALLOC;
+
+        }
+
+    }
+
+    template <typename key_type, typename value_type>
+    bool Entry<key_type, value_type>::assign(key_type key, value_type value) {
+
+        if (this->state != UNALLOC) {
+
+            // Key and value assignments
+
+            *(this->key)   = key;
+            *(this->value) = value;
+
+            // Entry's state update
+
+            this->state = FULL;
+
+            // Sucess
+
+            return true;
+
+        } else {
+
+            // Fail
+
+            return false;
 
         }
 
