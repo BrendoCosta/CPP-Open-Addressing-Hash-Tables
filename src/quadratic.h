@@ -169,14 +169,7 @@ namespace CPPOAHT {
 
                 }
 
-                // Key and value assignments
-
-                *(this->entries[probingPosition].key)   = key;
-                *(this->entries[probingPosition].value) = value;
-
-                // Entry's state update
-
-                this->entries[probingPosition].state = CPPOAHT::Entry<key_type, value_type>::FULL;
+                this->entries[probingPosition].assign(key, value);
 
                 // Table's key count update
 
@@ -264,6 +257,11 @@ namespace CPPOAHT {
         }
 
         return;
+
+    }
+
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>::_find(key_type key) {
 
     }
 
