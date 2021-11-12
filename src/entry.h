@@ -74,7 +74,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::~Entry() {
 
-        this->dealloc();
+        //this->dealloc();
 
     }
 

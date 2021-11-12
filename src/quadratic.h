@@ -218,8 +218,12 @@ namespace CPPOAHT {
 
             if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL) {
 
-                this->entries[i].state = CPPOAHT::Entry<key_type, value_type>::UNALLOC;
-                this->_insert(*(this->entries[i].key), *(this->entries[i].value));
+                key_type   key   = *(this->entries[i].key);
+                value_type value = *(this->entries[i].value);
+
+                this->entries[i].dealloc();
+
+                this->_insert(key, value);
 
             }
 
