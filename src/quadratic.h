@@ -32,6 +32,7 @@
 #ifndef CPPOAHT_QUADRATIC_H
 #define CPPOAHT_QUADRATIC_H
 
+#include "hashtable.h"
 #include "types.h"
 #include "entry.h"
 #include "utils.h"
@@ -44,7 +45,7 @@
 namespace CPPOAHT {
 
     template <typename key_type, typename value_type>
-    class QuadHashTable {
+    class QuadHashTable : public HashTable<key_type, value_type> {
 
         public:
 
@@ -307,6 +308,13 @@ namespace CPPOAHT {
     void QuadHashTable<key_type, value_type>::remove(key_type key) {
 
         this->_remove(key);
+
+        return;
+
+    }
+
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>::find(key_type key) {
 
         return;
 
