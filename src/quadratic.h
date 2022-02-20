@@ -45,7 +45,7 @@
 namespace CPPOAHT {
 
     template <typename key_type, typename value_type>
-    class QuadHashTable : public HashTable<key_type, value_type> {
+    class QuadHashTable : public HashTable <key_type, value_type> {
 
         public:
 
@@ -59,34 +59,25 @@ namespace CPPOAHT {
 
         private:
 
-            CPPOAHT::index_t size       = 0;
+            CPPOAHT::index_t size = 0;
             CPPOAHT::index_t keys_count = 0;
-            CPPOAHT::index_t residues   = 0;
-
-            bool entry_caching;
-
-            CPPOAHT::index_t (*hashFunction)(key_type);
-
+            CPPOAHT::index_t residues = 0;
+            CPPOAHT::index_t (*qht_hashFunction)(key_type);
             CPPOAHT::Entry<key_type, value_type>* entries;
 
-            void _insert(key_type key, value_type value);
+            void qht_insert(key_type key, value_type value);
+            void qht_rehash(CPPOAHT::index_t new_size);
+            void qht_remove(key_type key);
+            void qht_find(key_type key);
+            void qht_updateSize(CPPOAHT::index_t new_size);
 
-            void _rehash(CPPOAHT::index_t new_size);
-
-            void _remove(key_type key);
-
-            void _find(key_type key);
-
-            void _updateSize(CPPOAHT::index_t new_size);
+            bool qht_entryCache;
 
         public:
 
             CPPOAHT::float_t loadFactor(void);
-
             void insert(key_type key, value_type value);
-
             void remove(key_type key);
-
             void find(key_type key);
 
             // Debug
@@ -101,32 +92,17 @@ namespace CPPOAHT {
 
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::QuadHashTable(
-        CPPOAHT::index_t (*hashFn)(key_type),
-        CPPOAHT::index_t initial_size,
-        bool entry_caching
+        CPPOAHT::index_t (*arg_hashFunction)(key_type),
+        CPPOAHT::index_t arg_initialSize,
+        bool arg_enableEntryCache
     ) {
 
-        // Prime numbers table size approach
-
-        if (!isPrime(initial_size))
-
-            initial_size = nextPrime(initial_size);
-
-        // Entries's and indexes memory allocation
-
-        this->entries = new CPPOAHT::Entry<key_type, value_type>[initial_size];
-
-        // Table's size and residues assignments
-
-        this->_updateSize(initial_size);
-
-        // Caching assignments
-
-        this->entry_caching = entry_caching;
-
-        // Hash function assignments
-
-        this->hashFunction = hashFn;
+        if (!isPrime(arg_initialSize))
+            arg_initialSize = nextPrime(arg_initialSize);
+        this->entries = new CPPOAHT::Entry<key_type, value_type>[arg_initialSize];
+        this->qht_updateSize(arg_initialSize);
+        this->qht_entryCache = arg_enableEntryCache;
+        this->qht_hashFunction = arg_hashFunction;
 
     }
 
@@ -148,9 +124,9 @@ namespace CPPOAHT {
     // -------------------------------------------------------------------------
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_insert(key_type key, value_type value) {
+    void QuadHashTable<key_type, value_type>::qht_insert(key_type key, value_type value) {
 
-        CPPOAHT::index_t hashPosition = hashFunction(key);
+        CPPOAHT::index_t hashPosition = qht_hashFunction(key);
         CPPOAHT::index_t probingPosition;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
@@ -187,10 +163,9 @@ namespace CPPOAHT {
     }
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_rehash(CPPOAHT::index_t new_size) {
+    void QuadHashTable<key_type, value_type>::qht_rehash(CPPOAHT::index_t new_size) {
 
         // Only prime number table size approach
-
         new_size = nextPrime(new_size);
 
         /*
@@ -198,33 +173,25 @@ namespace CPPOAHT {
          * to it. Deletes all old array primary addresses, but keeps it's keys
          * and values.
         */
-
         CPPOAHT::Entry<key_type, value_type> *newEntries = new CPPOAHT::Entry<key_type, value_type>[new_size];
         std::copy(this->entries, (this->entries + this->size), newEntries);
-
         delete[] this->entries;
         this->entries = newEntries;
 
         // Control's variables update
-
         this->keys_count = 0;
-
         CPPOAHT::index_t old_size = this->size;
-
-        this->_updateSize(new_size);
+        this->qht_updateSize(new_size);
 
         // Reinsert
-
         for (CPPOAHT::index_t i = 0; i < old_size; i++) {
 
             if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL) {
 
-                key_type   key   = *(this->entries[i].key);
+                key_type key = *(this->entries[i].key);
                 value_type value = *(this->entries[i].value);
-
                 this->entries[i].dealloc();
-
-                this->_insert(key, value);
+                this->qht_insert(key, value);
 
             }
 
@@ -233,26 +200,22 @@ namespace CPPOAHT {
     }
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_remove(key_type key) {
+    void QuadHashTable<key_type, value_type>::qht_remove(key_type key) {
 
-        CPPOAHT::index_t hashPosition = hashFunction(key);
+        CPPOAHT::index_t hashPosition = qht_hashFunction(key);
         CPPOAHT::index_t probingPosition;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
             // Position probing
-
             probingPosition = (hashPosition + (i * i)) % this->size;
 
             if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::FULL
                 && *(this->entries[probingPosition].key) == key) {
 
                 // Key and value memory deallocation
-
                 this->entries[probingPosition].dealloc();
-
                 // Table's key count update
-
                 this->keys_count -= 1;
 
                 return;
@@ -266,12 +229,12 @@ namespace CPPOAHT {
     }
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_find(key_type key) {
+    void QuadHashTable<key_type, value_type>::qht_find(key_type key) {
 
     }
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::_updateSize(CPPOAHT::index_t new_size) {
+    void QuadHashTable<key_type, value_type>::qht_updateSize(CPPOAHT::index_t new_size) {
 
         this->size = new_size;
         this->residues = ( ( new_size + 1 ) / 2 );
@@ -292,11 +255,11 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::insert(key_type key, value_type value) {
 
-        this->_insert(key, value);
+        this->qht_insert(key, value);
 
         if (this->loadFactor() > 0.5) {
 
-            this->_rehash(this->size * 2);
+            this->qht_rehash(this->size * 2);
 
         }
 
@@ -307,7 +270,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::remove(key_type key) {
 
-        this->_remove(key);
+        this->qht_remove(key);
 
         return;
 
