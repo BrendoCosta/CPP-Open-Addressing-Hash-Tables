@@ -32,6 +32,8 @@
 #ifndef CPPOAHT_HASHTABLE_H
 #define CPPOAHT_HASHTABLE_H
 
+#include "types.h"
+
 namespace CPPOAHT {
 
     template <typename key_type, typename value_type>
@@ -40,10 +42,9 @@ namespace CPPOAHT {
         public:
 
             virtual void insert(key_type key, value_type value) = 0;
-
             virtual void remove(key_type key) = 0;
-
             virtual void find(key_type key) = 0;
+            virtual CPPOAHT::index_t getSize(void) = 0;
 
     };
 

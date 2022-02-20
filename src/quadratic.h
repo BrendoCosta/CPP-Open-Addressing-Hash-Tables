@@ -79,6 +79,7 @@ namespace CPPOAHT {
             void insert(key_type key, value_type value);
             void remove(key_type key);
             void find(key_type key);
+            CPPOAHT::index_t getSize(void);
 
             // Debug
 
@@ -122,6 +123,13 @@ namespace CPPOAHT {
     // -------------------------------------------------------------------------
     //                            Class's methods
     // -------------------------------------------------------------------------
+
+    template <typename key_type, typename value_type>
+    CPPOAHT::index_t QuadHashTable<key_type, value_type>::getSize(void) {
+
+        return this->size;
+
+    }
 
     template <typename key_type, typename value_type>
     void QuadHashTable<key_type, value_type>::qht_insert(key_type key, value_type value) {
