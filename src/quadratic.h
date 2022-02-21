@@ -75,11 +75,14 @@ namespace CPPOAHT {
 
         public:
 
+            CPPOAHT::index_t getSize(void);
+            CPPOAHT::index_t getKeysCount(void);
+            CPPOAHT::float_t getLoadFactor(void);
+
             CPPOAHT::float_t loadFactor(void);
             void insert(key_type key, value_type value);
             void remove(key_type key);
             void find(key_type key);
-            CPPOAHT::index_t getSize(void);
 
             // Debug
 
@@ -121,18 +124,40 @@ namespace CPPOAHT {
     }
 
     // -------------------------------------------------------------------------
-    //                            Class's methods
+    //                            Public methods
     // -------------------------------------------------------------------------
 
-    template <typename key_type, typename value_type>
-    CPPOAHT::index_t QuadHashTable<key_type, value_type>::getSize(void) {
+    #define QHTFN(_TYPE) template <typename key_type, typename value_type> _TYPE QuadHashTable<key_type, value_type>
+
+    QHTFN(CPPOAHT::index_t)::getSize(void) {
 
         return this->size;
 
     }
 
     template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::qht_insert(key_type key, value_type value) {
+    CPPOAHT::index_t QuadHashTable<key_type, value_type>
+    ::getKeysCount(void) {
+
+        return this->keys_count;
+
+    }
+
+    template <typename key_type, typename value_type>
+    CPPOAHT::float_t QuadHashTable<key_type, value_type>
+    ::getLoadFactor(void) {
+
+        return ( this->getKeysCount() / ( (float) this->getSize() ) );
+
+    }
+
+    // -------------------------------------------------------------------------
+    //                           Private methods
+    // -------------------------------------------------------------------------
+
+    template <typename key_type, typename value_type>
+    void QuadHashTable<key_type, value_type>
+    ::qht_insert(key_type key, value_type value) {
 
         CPPOAHT::index_t hashPosition = qht_hashFunction(key);
         CPPOAHT::index_t probingPosition;

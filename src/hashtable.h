@@ -41,10 +41,13 @@ namespace CPPOAHT {
 
         public:
 
+            virtual CPPOAHT::index_t getSize(void) = 0;
+            virtual CPPOAHT::index_t getKeysCount(void) = 0;
+            virtual CPPOAHT::float_t getLoadFactor(void) = 0;
+
             virtual void insert(key_type key, value_type value) = 0;
             virtual void remove(key_type key) = 0;
             virtual void find(key_type key) = 0;
-            virtual CPPOAHT::index_t getSize(void) = 0;
 
     };
 
