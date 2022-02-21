@@ -135,17 +135,13 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    CPPOAHT::index_t QuadHashTable<key_type, value_type>
-    ::getKeysCount(void) {
+    QHTFN(CPPOAHT::index_t)::getKeysCount(void) {
 
         return this->keys_count;
 
     }
 
-    template <typename key_type, typename value_type>
-    CPPOAHT::float_t QuadHashTable<key_type, value_type>
-    ::getLoadFactor(void) {
+    QHTFN(CPPOAHT::float_t)::getLoadFactor(void) {
 
         return ( this->getKeysCount() / ( (float) this->getSize() ) );
 
@@ -155,9 +151,7 @@ namespace CPPOAHT {
     //                           Private methods
     // -------------------------------------------------------------------------
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>
-    ::qht_insert(key_type key, value_type value) {
+    QHTFN(void)::qht_insert(key_type key, value_type value) {
 
         CPPOAHT::index_t hashPosition = qht_hashFunction(key);
         CPPOAHT::index_t probingPosition;
@@ -195,8 +189,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::qht_rehash(CPPOAHT::index_t new_size) {
+    QHTFN(void)::qht_rehash(CPPOAHT::index_t new_size) {
 
         // Only prime number table size approach
         new_size = nextPrime(new_size);
@@ -232,8 +225,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::qht_remove(key_type key) {
+    QHTFN(void)::qht_remove(key_type key) {
 
         CPPOAHT::index_t hashPosition = qht_hashFunction(key);
         CPPOAHT::index_t probingPosition;
@@ -261,13 +253,11 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::qht_find(key_type key) {
+    QHTFN(void)::qht_find(key_type key) {
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::qht_updateSize(CPPOAHT::index_t new_size) {
+    QHTFN(void)::qht_updateSize(CPPOAHT::index_t new_size) {
 
         this->size = new_size;
         this->residues = ( ( new_size + 1 ) / 2 );
@@ -278,15 +268,13 @@ namespace CPPOAHT {
     //                             Public methods
     // -------------------------------------------------------------------------
 
-    template <typename key_type, typename value_type>
-    CPPOAHT::float_t QuadHashTable<key_type, value_type>::loadFactor(void) {
+    QHTFN(CPPOAHT::float_t)::loadFactor(void) {
 
         return ( this->keys_count / ( (float) this->size) );
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::insert(key_type key, value_type value) {
+    QHTFN(void)::insert(key_type key, value_type value) {
 
         this->qht_insert(key, value);
 
@@ -300,8 +288,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::remove(key_type key) {
+    QHTFN(void)::remove(key_type key) {
 
         this->qht_remove(key);
 
@@ -309,15 +296,13 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::find(key_type key) {
+    QHTFN(void)::find(key_type key) {
 
         return;
 
     }
 
-    template <typename key_type, typename value_type>
-    void QuadHashTable<key_type, value_type>::display(void) {
+    QHTFN(void)::display(void) {
 
         std::cout << "\nIND  STS  KEY  VAL" << std::endl;
 
