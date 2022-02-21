@@ -127,7 +127,7 @@ namespace CPPOAHT {
     //                            Public methods
     // -------------------------------------------------------------------------
 
-    #define QHTFN(_TYPE) template <typename key_type, typename value_type> _TYPE QuadHashTable<key_type, value_type>
+    #define QHTFN(_RETURNTYPE) template <typename key_type, typename value_type> _RETURNTYPE QuadHashTable<key_type, value_type>
 
     QHTFN(CPPOAHT::index_t)::getSize(void) {
 
