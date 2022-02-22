@@ -101,8 +101,8 @@ namespace CPPOAHT {
         bool arg_enableEntryCache
     ) {
 
-        if (!isPrime(arg_initialSize))
-            arg_initialSize = nextPrime(arg_initialSize);
+        if (!CPPOAHT::Utils::isPrime(arg_initialSize))
+            arg_initialSize = CPPOAHT::Utils::getNextPrime(arg_initialSize);
         this->entries = new CPPOAHT::Entry<key_type, value_type>[arg_initialSize];
         this->qht_updateSize(arg_initialSize);
         this->qht_entryCache = arg_enableEntryCache;
@@ -192,7 +192,7 @@ namespace CPPOAHT {
     QHTFN(void)::qht_rehash(CPPOAHT::index_t new_size) {
 
         // Only prime number table size approach
-        new_size = nextPrime(new_size);
+        new_size = CPPOAHT::Utils::getNextPrime(new_size);
 
         /*
          * Allocates a new entries array and copy the entire old entries array
