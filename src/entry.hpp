@@ -32,8 +32,8 @@
 #ifndef CPPOAHT_ENTRY_H
 #define CPPOAHT_ENTRY_H
 
-#include "entry.h"
-#include "types.h"
+#include "entry.hpp"
+#include "types.hpp"
 
 namespace CPPOAHT {
 
@@ -62,6 +62,8 @@ namespace CPPOAHT {
             value_type* value;
             uint8_t     state = UNALLOC;
 
+            // Set methods
+
             void alloc(void);
             void dealloc(void);
 
@@ -78,8 +80,11 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void Entry<key_type, value_type>::alloc(void) {
+    // Set methos
+
+    #define ENTFN(_RETURNTYPE) template <typename key_type, typename value_type> _RETURNTYPE Entry<key_type, value_type>
+
+    ENTFN(void)::alloc(void) {
 
         if (this->state == UNALLOC) {
 
@@ -92,8 +97,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void Entry<key_type, value_type>::dealloc(void) {
+    ENTFN(void)::dealloc(void) {
 
         if (this->state != UNALLOC) {
 
@@ -106,8 +110,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    bool Entry<key_type, value_type>::assign(key_type key, value_type value) {
+    ENTFN(bool)::assign(key_type key, value_type value) {
 
         if (this->state != UNALLOC) {
 
