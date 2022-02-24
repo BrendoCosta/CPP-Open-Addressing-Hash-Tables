@@ -64,8 +64,9 @@ namespace CPPOAHT {
 
             // Get methods
 
-            bool isUnallocated(void);
+            bool isFull(void);
             bool isEmpty(void);
+            bool isUnallocated(void);
 
             // Set methods
 
@@ -89,6 +90,16 @@ namespace CPPOAHT {
 
     // Get methos
 
+    ENTFN(bool)::isFull(void) {
+
+        if (this->state == FULL) {
+
+            return true;
+
+        } else { return false; }
+
+    }
+
     ENTFN(bool)::isUnallocated(void) {
 
         if (this->state == UNALLOC) {
@@ -106,7 +117,7 @@ namespace CPPOAHT {
             return true;
 
         } else { return false; }
-        
+
     }
 
     // Set methos
