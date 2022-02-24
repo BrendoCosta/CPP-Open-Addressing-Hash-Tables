@@ -32,24 +32,43 @@
 #ifndef CPPOAHT_UTILS_H
 #define CPPOAHT_UTILS_H
 
+#include <cmath>
+
 namespace CPPOAHT {
 
-    template <typename integer_type>
-    bool isPrime(integer_type number);
+    class Utils {
 
-    template <typename integer_type>
-    integer_type nextPrime(integer_type number);
+        public:
+
+            template <typename type>
+            static bool isInteger(type number);
+
+            template <typename type>
+            static bool isPrime(type number);
+
+            template <typename type>
+            static type getNextPrime(type number);
+
+
+    };
 
     /* ---------------------------------------------------------------------- */
 
-    template <typename integer_type>
-    bool isPrime(integer_type number) {
+    template <typename type>
+    bool Utils::isInteger(type number) {
+
+        return std::floor(number) == number;
+
+    }
+
+    template <typename type>
+    bool Utils::isPrime(type number) {
 
         if (number == 2) return true;
 
         if (number == 1 || number % 2 == 0) return false;
 
-        for (integer_type i = 3; (i * i) < number + 1; i += 2) {
+        for (type i = 3; (i * i) < number + 1; i += 2) {
 
             if (number % i == 0) return false;
 
@@ -61,8 +80,8 @@ namespace CPPOAHT {
 
     /* --- */
 
-    template <typename integer_type>
-    integer_type nextPrime(integer_type number) {
+    template <typename type>
+    type Utils::getNextPrime(type number) {
 
         if (number <= 1) {
 
