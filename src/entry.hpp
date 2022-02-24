@@ -62,6 +62,11 @@ namespace CPPOAHT {
             value_type* value;
             uint8_t     state = UNALLOC;
 
+            // Get methods
+
+            bool isUnallocated(void);
+            bool isEmpty(void);
+
             // Set methods
 
             void alloc(void);
@@ -73,6 +78,8 @@ namespace CPPOAHT {
 
     /* ---------------------------------------------------------------------- */
 
+    #define ENTFN(_RETURNTYPE) template <typename key_type, typename value_type> _RETURNTYPE Entry<key_type, value_type>
+
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::~Entry() {
 
@@ -80,9 +87,29 @@ namespace CPPOAHT {
 
     }
 
-    // Set methos
+    // Get methos
 
-    #define ENTFN(_RETURNTYPE) template <typename key_type, typename value_type> _RETURNTYPE Entry<key_type, value_type>
+    ENTFN(bool)::isUnallocated(void) {
+
+        if (this->state == UNALLOC) {
+
+            return true;
+
+        } else { return false; }
+
+    }
+
+    ENTFN(bool)::isEmpty(void) {
+
+        if (this->state == EMPTY) {
+
+            return true;
+
+        } else { return false; }
+        
+    }
+
+    // Set methos
 
     ENTFN(void)::alloc(void) {
 
