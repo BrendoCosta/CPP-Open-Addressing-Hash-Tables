@@ -32,7 +32,7 @@
 #ifndef CPPOAHT_HASHTABLE_H
 #define CPPOAHT_HASHTABLE_H
 
-#include "types.h"
+#include "types.hpp"
 
 namespace CPPOAHT {
 

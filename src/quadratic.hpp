@@ -32,10 +32,10 @@
 #ifndef CPPOAHT_QUADRATIC_H
 #define CPPOAHT_QUADRATIC_H
 
-#include "hashtable.h"
-#include "types.h"
-#include "entry.h"
-#include "utils.h"
+#include "hashtable.hpp"
+#include "types.hpp"
+#include "entry.hpp"
+#include "utils.hpp"
 
 #include <algorithm>
 #include <cstdio>
