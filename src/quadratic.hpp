@@ -162,12 +162,12 @@ namespace CPPOAHT {
 
             probingPosition = (hashPosition + (i * i)) % this->size;
 
-            if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC
-                || this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::EMPTY) {
+            if (this->entries[probingPosition].isUnallocated()
+                || this->entries[probingPosition].isEmpty()) {
 
                 // Key and value memory allocation if necessary
 
-                if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::UNALLOC) {
+                if (this->entries[probingPosition].isUnallocated()) {
 
                     this->entries[probingPosition].alloc();
 
@@ -212,7 +212,7 @@ namespace CPPOAHT {
         // Reinsert
         for (CPPOAHT::index_t i = 0; i < old_size; i++) {
 
-            if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL) {
+            if (this->entries[i].isFull()) {
 
                 key_type key = *(this->entries[i].key);
                 value_type value = *(this->entries[i].value);
@@ -235,7 +235,7 @@ namespace CPPOAHT {
             // Position probing
             probingPosition = (hashPosition + (i * i)) % this->size;
 
-            if (this->entries[probingPosition].state == CPPOAHT::Entry<key_type, value_type>::FULL
+            if (this->entries[probingPosition].isFull()
                 && *(this->entries[probingPosition].key) == key) {
 
                 // Key and value memory deallocation
