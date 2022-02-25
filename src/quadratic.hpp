@@ -65,7 +65,7 @@ namespace CPPOAHT {
             CPPOAHT::index_t (*qht_hashFunction)(key_type);
             CPPOAHT::Entry<key_type, value_type>* entries;
 
-            void qht_insert(key_type key, value_type value);
+            bool qht_insert(key_type key, value_type value);
             void qht_rehash(CPPOAHT::index_t new_size);
             void qht_remove(key_type key);
             void qht_find(key_type key);
@@ -151,7 +151,7 @@ namespace CPPOAHT {
     //                           Private methods
     // -------------------------------------------------------------------------
 
-    QHTFN(void)::qht_insert(key_type key, value_type value) {
+    QHTFN(bool)::qht_insert(key_type key, value_type value) {
 
         CPPOAHT::index_t hashPosition = qht_hashFunction(key);
         CPPOAHT::index_t probingPosition;
@@ -175,42 +175,55 @@ namespace CPPOAHT {
 
                 this->entries[probingPosition].assign(key, value);
 
-                // Table's key count update
-
-                this->keys_count += 1;
-
-                return;
+                return true;
 
             }
 
         }
 
-        return;
+        return false;
 
     }
 
+    /* @author  Brendo Costa <brendocosta@id.uff.br>;
+     * @date    2022-02-24
+     * @desc    Allocates a new entries' array with a given
+                size, copy all current array's entries to it
+                and reorganize them;
+     * @todo    Move the array's memory allocation code
+                to a separated boolean method. */
+
     QHTFN(void)::qht_rehash(CPPOAHT::index_t new_size) {
 
-        // Only prime number table size approach
-        new_size = CPPOAHT::Utils::getNextPrime(new_size);
+        /* Allocates a new entries' array following
+         * the prime number table's size approach. */
 
-        /*
-         * Allocates a new entries array and copy the entire old entries array
-         * to it. Deletes all old array primary addresses, but keeps it's keys
-         * and values.
-        */
+        new_size = CPPOAHT::Utils::getNextPrime(new_size);
         CPPOAHT::Entry<key_type, value_type> *newEntries = new CPPOAHT::Entry<key_type, value_type>[new_size];
-        std::copy(this->entries, (this->entries + this->size), newEntries);
+
+        /* Source's "from" address (here we want the
+         * array's base/start address), source's "to" address
+         * (here we'll copying the entire array), and finally
+         * the destination array address (we also want the
+         * destination base/start address too). */
+
+        std::copy(this->entries, ( this->entries + this->getSize() ), newEntries);
+
+        /* Deallocs the old address and reasign
+         * the table to the new one. */
+
         delete[] this->entries;
         this->entries = newEntries;
 
-        // Control's variables update
-        this->keys_count = 0;
-        CPPOAHT::index_t old_size = this->size;
+        // Update the table's size and residues count to match new size.
+
         this->qht_updateSize(new_size);
 
-        // Reinsert
-        for (CPPOAHT::index_t i = 0; i < old_size; i++) {
+        /* Finally reorganize all entries to match the
+         * new residues / avaliable probing positions of
+         * the new table's size */
+
+        for (CPPOAHT::index_t i = 0; i < this->getSize(); i++) {
 
             if (this->entries[i].isFull()) {
 
@@ -222,6 +235,8 @@ namespace CPPOAHT {
             }
 
         }
+
+        return;
 
     }
 
@@ -276,9 +291,15 @@ namespace CPPOAHT {
 
     QHTFN(void)::insert(key_type key, value_type value) {
 
-        this->qht_insert(key, value);
+        if (this->qht_insert(key, value)) {
 
-        if (this->loadFactor() > 0.5) {
+            // Table's key count update
+
+            this->keys_count += 1;
+
+        }
+
+        if (this->getLoadFactor() > 0.5) {
 
             this->qht_rehash(this->size * 2);
 
