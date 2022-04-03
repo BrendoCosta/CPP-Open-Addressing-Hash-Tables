@@ -38,6 +38,7 @@ namespace CPPOAHT {
 
     using index_t = uintmax_t;
     using float_t = float;
+    using byte_t = uint8_t;
 }
 
 #endif // CPPOAHT_TYPES_H
