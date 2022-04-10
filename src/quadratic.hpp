@@ -297,11 +297,10 @@ namespace CPPOAHT {
 
             this->keys_count += 1;
 
-        }
+            // Rehash if necessary
 
-        if (this->getLoadFactor() > 0.5) {
+            if (this->getLoadFactor() > 0.5) this->qht_rehash(this->size * 2);
 
-            this->qht_rehash(this->size * 2);
 
         }
 
