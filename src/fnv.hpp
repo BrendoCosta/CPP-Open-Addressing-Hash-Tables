@@ -39,28 +39,28 @@ namespace CPPOAHT {
 
     namespace FNV {
 
-        const uint32_t FNV_PRIME_32         = 0x01000193;
-        const uint32_t FNV_OFFSET_BASIS_32  = 0x811c9dc5;
-        const uint64_t FNV_PRIME_64         = 0x00000100000001b3;
-        const uint64_t FNV_OFFSET_BASIS_64  = 0xcbf29ce484222325;
+        const std::uint32_t FNV_PRIME_32         = 0x01000193;
+        const std::uint32_t FNV_OFFSET_BASIS_32  = 0x811c9dc5;
+        const std::uint64_t FNV_PRIME_64         = 0x00000100000001b3;
+        const std::uint64_t FNV_OFFSET_BASIS_64  = 0xcbf29ce484222325;
 
         /* @author  Brendo Costa <brendocosta@id.uff.br>;
          * @date    2022-04-03
          * @desc    Computes 32-bit FNV-1A hash for a given
-                    data stream. Eg. passing a "Hello world!" const char* 
+                    data stream. Eg. passing a "Hello world!" const char*
                     string to the function returns 2054747410 = 7a78f512; */
 
         template <typename T>
-        uint32_t FNV1A32(const T& data) {
+        std::uint32_t FNV1A32(const T& data) {
 
             const CPPOAHT::byte_t* buffer = reinterpret_cast<const CPPOAHT::byte_t*>(data);
-            uint32_t hash = FNV_OFFSET_BASIS_32;
+            std::uint32_t hash = FNV_OFFSET_BASIS_32;
 
             while (*buffer) {
-                
+
                 hash = hash ^ *buffer;
                 hash = hash * FNV_PRIME_32;
-                
+
                 buffer++;
 
             }
