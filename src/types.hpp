@@ -36,9 +36,10 @@
 
 namespace CPPOAHT {
 
-    using index_t = uintmax_t;
+    using index_t = std::uintmax_t;
     using float_t = float;
-    using byte_t = uint8_t;
+    using byte_t  = std::uint8_t;
+    using size_t  = std::size_t;
 }
 
 #endif // CPPOAHT_TYPES_H
