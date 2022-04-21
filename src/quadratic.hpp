@@ -44,6 +44,8 @@
 
 namespace CPPOAHT {
 
+    const CPPOAHT::index_t DEFAULT_TABLE_START_INDEX = 1;
+
     template <typename key_type, typename value_type>
     class QuadHashTable : public HashTable <key_type, value_type> {
 
@@ -65,10 +67,14 @@ namespace CPPOAHT {
             CPPOAHT::index_t (*qht_hashFunction)(key_type);
             CPPOAHT::Entry<key_type, value_type>* entries;
 
+            CPPOAHT::index_t qht_probe(
+                CPPOAHT::index_t inputPosition, 
+                CPPOAHT::index_t iteration
+            );
             bool qht_insert(key_type key, value_type value);
             void qht_rehash(CPPOAHT::index_t new_size);
             void qht_remove(key_type key);
-            void qht_find(key_type key);
+            CPPOAHT::index_t qht_find(key_type key);
             void qht_updateSize(CPPOAHT::index_t new_size);
 
             bool qht_entryCache;
@@ -82,7 +88,7 @@ namespace CPPOAHT {
             CPPOAHT::float_t loadFactor(void);
             void insert(key_type key, value_type value);
             void remove(key_type key);
-            void find(key_type key);
+            value_type find(key_type key);
 
             // Debug
 
@@ -151,16 +157,34 @@ namespace CPPOAHT {
     //                           Private methods
     // -------------------------------------------------------------------------
 
+    /* @author  Brendo Costa <brendocosta@id.uff.br>;
+     * @date    2022-04-21
+     * @desc    Calculates a quadratic probing position 
+                from an input position according to an input 
+                iteration number; */
+
+    QHTFN(CPPOAHT::index_t)::qht_probe(CPPOAHT::index_t inputPosition, CPPOAHT::index_t iteration) {
+
+        if (inputPosition < CPPOAHT::DEFAULT_TABLE_START_INDEX) {
+
+            inputPosition = CPPOAHT::DEFAULT_TABLE_START_INDEX;
+
+        }
+
+        return ( inputPosition + (iteration * iteration) ) % this->size;
+
+    }
+
     QHTFN(bool)::qht_insert(key_type key, value_type value) {
 
-        CPPOAHT::index_t hashPosition = qht_hashFunction(key);
-        CPPOAHT::index_t probingPosition;
+        CPPOAHT::index_t hashPosition    = this->qht_hashFunction(key);
+        CPPOAHT::index_t probingPosition = 0;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
             // Position probing
 
-            probingPosition = (hashPosition + (i * i)) % this->size;
+            probingPosition = this->qht_probe(hashPosition, i);
 
             if (this->entries[probingPosition].isUnallocated()
                 || this->entries[probingPosition].isEmpty()) {
@@ -242,13 +266,13 @@ namespace CPPOAHT {
 
     QHTFN(void)::qht_remove(key_type key) {
 
-        CPPOAHT::index_t hashPosition = qht_hashFunction(key);
-        CPPOAHT::index_t probingPosition;
+        CPPOAHT::index_t hashPosition    = this->qht_hashFunction(key);
+        CPPOAHT::index_t probingPosition = 0;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
             // Position probing
-            probingPosition = (hashPosition + (i * i)) % this->size;
+            probingPosition = this->qht_probe(hashPosition, i);
 
             if (this->entries[probingPosition].isFull()
                 && *(this->entries[probingPosition].key) == key) {
@@ -268,7 +292,34 @@ namespace CPPOAHT {
 
     }
 
-    QHTFN(void)::qht_find(key_type key) {
+    QHTFN(CPPOAHT::index_t)::qht_find(key_type key) {
+
+        CPPOAHT::index_t hashPosition     = this->qht_hashFunction(key);
+        CPPOAHT::index_t initProbPosition = 0;
+        CPPOAHT::index_t probingPosition  = 0;
+        
+        for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
+
+            // Position probing
+            probingPosition = this->qht_probe(hashPosition, i);
+
+            if (i == CPPOAHT::DEFAULT_TABLE_START_INDEX)
+                initProbPosition = probingPosition;
+
+            if (i != CPPOAHT::DEFAULT_TABLE_START_INDEX
+                && probingPosition == initProbPosition)
+                return 0;
+
+            if (this->entries[probingPosition].isFull()
+                && *(this->entries[probingPosition].key) == key) {
+
+                return probingPosition;
+
+            }
+
+        }
+
+        return 0;
 
     }
 
@@ -316,9 +367,9 @@ namespace CPPOAHT {
 
     }
 
-    QHTFN(void)::find(key_type key) {
+    QHTFN(value_type)::find(key_type key) {
 
-        return;
+        return (value_type) this->qht_find(key);
 
     }
 
@@ -334,7 +385,7 @@ namespace CPPOAHT {
 
             } else {
 
-                std::cout << std::right << std::setw(2) << i << std::setw(4) << " " << std::left << std::setw(4) << unsigned(this->entries[i].state) << std::setw(7) << 0 << 0 << std::endl;
+                std::cout << std::right << std::setw(2) << i << std::setw(4) << " " << std::left << std::setw(4) << unsigned(this->entries[i].state) << std::setw(7) << 0 << "--" << std::endl;
 
             }
         }

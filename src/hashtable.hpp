@@ -47,7 +47,7 @@ namespace CPPOAHT {
 
             virtual void insert(key_type key, value_type value) = 0;
             virtual void remove(key_type key) = 0;
-            virtual void find(key_type key) = 0;
+            virtual value_type find(key_type key) = 0;
 
     };
 
