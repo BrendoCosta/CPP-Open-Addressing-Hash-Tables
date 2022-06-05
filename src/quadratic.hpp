@@ -35,6 +35,7 @@
 #include "hashtable.hpp"
 #include "types.hpp"
 #include "entry.hpp"
+#include "query.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -71,10 +72,10 @@ namespace CPPOAHT {
                 CPPOAHT::index_t inputPosition, 
                 CPPOAHT::index_t iteration
             );
-            bool qht_insert(key_type key, value_type value);
+            CPPOAHT::Query<key_type, value_type> qht_insert(key_type key, value_type value);
             void qht_rehash(CPPOAHT::index_t new_size);
-            void qht_remove(key_type key);
-            CPPOAHT::index_t qht_find(key_type key);
+            CPPOAHT::Query<key_type, value_type> qht_remove(key_type key);
+            CPPOAHT::Query<key_type, value_type> qht_find(key_type key);
             void qht_updateSize(CPPOAHT::index_t new_size);
 
             bool qht_entryCache;
@@ -133,7 +134,7 @@ namespace CPPOAHT {
     //                            Public methods
     // -------------------------------------------------------------------------
 
-    #define QHTFN(_RETURNTYPE) template <typename key_type, typename value_type> _RETURNTYPE QuadHashTable<key_type, value_type>
+    #define QHTFN(...) template <typename key_type, typename value_type> __VA_ARGS__ QuadHashTable<key_type, value_type>
 
     QHTFN(CPPOAHT::index_t)::getSize(void) {
 
@@ -175,10 +176,11 @@ namespace CPPOAHT {
 
     }
 
-    QHTFN(bool)::qht_insert(key_type key, value_type value) {
+    QHTFN(CPPOAHT::Query<key_type, value_type>)::qht_insert(key_type key, value_type value) {
 
         CPPOAHT::index_t hashPosition    = this->qht_hashFunction(key);
         CPPOAHT::index_t probingPosition = 0;
+        CPPOAHT::Query<key_type, value_type> returnQuery;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
@@ -198,14 +200,14 @@ namespace CPPOAHT {
                 }
 
                 this->entries[probingPosition].assign(key, value);
-
-                return true;
+                returnQuery.assignStop(probingPosition, i);
+                break;
 
             }
 
         }
 
-        return false;
+        return returnQuery;
 
     }
 
@@ -251,8 +253,8 @@ namespace CPPOAHT {
 
             if (this->entries[i].isFull()) {
 
-                key_type key = *(this->entries[i].key);
-                value_type value = *(this->entries[i].value);
+                key_type key = this->entries[i].getKey();
+                value_type value = this->entries[i].getValue();
                 this->entries[i].dealloc();
                 this->qht_insert(key, value);
 
@@ -264,10 +266,11 @@ namespace CPPOAHT {
 
     }
 
-    QHTFN(void)::qht_remove(key_type key) {
+    QHTFN(CPPOAHT::Query<key_type, value_type>)::qht_remove(key_type key) {
 
         CPPOAHT::index_t hashPosition    = this->qht_hashFunction(key);
         CPPOAHT::index_t probingPosition = 0;
+        CPPOAHT::Query<key_type, value_type> returnQuery;
 
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
@@ -275,51 +278,50 @@ namespace CPPOAHT {
             probingPosition = this->qht_probe(hashPosition, i);
 
             if (this->entries[probingPosition].isFull()
-                && *(this->entries[probingPosition].key) == key) {
+                && this->entries[probingPosition].getKey() == key) {
+
+                returnQuery.assignStop(probingPosition, i);
+                returnQuery.assignQueryEntry(
+                    this->entries[probingPosition].getKey(), 
+                    this->entries[probingPosition].getValue()
+                );
 
                 // Key and value memory deallocation
                 this->entries[probingPosition].dealloc();
                 // Table's key count update
                 this->keys_count -= 1;
 
-                return;
+                break;
 
             }
 
         }
 
-        return;
+        return returnQuery;
 
     }
 
-    QHTFN(CPPOAHT::index_t)::qht_find(key_type key) {
+    QHTFN(CPPOAHT::Query<key_type, value_type>)::qht_find(key_type key) {
 
         CPPOAHT::index_t hashPosition     = this->qht_hashFunction(key);
-        CPPOAHT::index_t initProbPosition = 0;
         CPPOAHT::index_t probingPosition  = 0;
+        CPPOAHT::Query<key_type, value_type> returnQuery;
         
         for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
 
             // Position probing
             probingPosition = this->qht_probe(hashPosition, i);
 
-            if (i == CPPOAHT::DEFAULT_TABLE_START_INDEX)
-                initProbPosition = probingPosition;
-
-            if (i != CPPOAHT::DEFAULT_TABLE_START_INDEX
-                && probingPosition == initProbPosition)
-                return 0;
-
             if (this->entries[probingPosition].isFull()
-                && *(this->entries[probingPosition].key) == key) {
+                && this->entries[probingPosition].getKey() == key) {
 
-                return probingPosition;
+                returnQuery.assignStop(probingPosition, i);
 
             }
 
         }
 
-        return 0;
+        return returnQuery;
 
     }
 
@@ -342,7 +344,9 @@ namespace CPPOAHT {
 
     QHTFN(void)::insert(key_type key, value_type value) {
 
-        if (this->qht_insert(key, value)) {
+        CPPOAHT::Query<key_type, value_type> query = this->qht_insert(key, value);
+
+        if (query.isValid()) {
 
             // Table's key count update
 
@@ -352,7 +356,6 @@ namespace CPPOAHT {
 
             if (this->getLoadFactor() > 0.5) this->qht_rehash(this->size * 2);
 
-
         }
 
         return;
@@ -361,7 +364,18 @@ namespace CPPOAHT {
 
     QHTFN(void)::remove(key_type key) {
 
-        this->qht_remove(key);
+        CPPOAHT::Query<key_type, value_type> query = this->qht_remove(key);
+
+        if (query.isValid()) {
+
+            CPPOAHT::Entry<key_type, value_type> ab = query.getQueryEntry();
+            std::cout << "\nREMOVE A: " << ab.getKey() << " B: " << ab.getValue() << std::endl;
+
+        } else {
+
+            // TODO: error handling
+
+        }
 
         return;
 
@@ -369,7 +383,18 @@ namespace CPPOAHT {
 
     QHTFN(value_type)::find(key_type key) {
 
-        return (value_type) this->qht_find(key);
+        CPPOAHT::Query<key_type, value_type> query = this->qht_find(key);
+
+        if (query.isValid()) {
+            
+            return this->entries[query.getReturnedIndex()].getValue();
+
+        } else {
+
+            // TODO: error handling
+            return (value_type) 0;
+
+        }
 
     }
 
