@@ -67,6 +67,8 @@ namespace CPPOAHT {
             bool isFull(void);
             bool isEmpty(void);
             bool isUnallocated(void);
+            key_type getKey(void);
+            value_type getValue(void);
 
             // Set methods
 
@@ -100,6 +102,16 @@ namespace CPPOAHT {
 
     }
 
+    ENTFN(bool)::isEmpty(void) {
+
+        if (this->state == EMPTY) {
+
+            return true;
+
+        } else { return false; }
+
+    }
+
     ENTFN(bool)::isUnallocated(void) {
 
         if (this->state == UNALLOC) {
@@ -110,13 +122,31 @@ namespace CPPOAHT {
 
     }
 
-    ENTFN(bool)::isEmpty(void) {
+    ENTFN(key_type)::getKey(void) {
 
-        if (this->state == EMPTY) {
+        if (this->state == FULL) {
 
-            return true;
+            return *(this->key);
 
-        } else { return false; }
+        } else {
+
+            return (key_type) 0;
+
+        }
+
+    }
+
+    ENTFN(value_type)::getValue(void) {
+
+        if (this->state == FULL) {
+
+            return *(this->value);
+
+        } else {
+
+            return (value_type) 0;
+
+        }
 
     }
 
@@ -168,7 +198,7 @@ namespace CPPOAHT {
         } else {
 
             // Fail
-
+            std::cout << "\nDEBUG: ENTRY NO ALLOC" << std::endl;
             return false;
 
         }
