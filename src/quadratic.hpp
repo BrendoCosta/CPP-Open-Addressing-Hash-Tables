@@ -42,6 +42,7 @@
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 namespace CPPOAHT {
 
@@ -66,7 +67,8 @@ namespace CPPOAHT {
             CPPOAHT::index_t keys_count = 0;
             CPPOAHT::index_t residues = 0;
             CPPOAHT::index_t (*qht_hashFunction)(key_type);
-            CPPOAHT::Entry<key_type, value_type>* entries;
+            
+            std::vector< CPPOAHT::Entry<key_type, value_type> > entries;
 
             CPPOAHT::index_t qht_probe(
                 CPPOAHT::index_t inputPosition, 
@@ -104,13 +106,15 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::QuadHashTable(
         CPPOAHT::index_t (*arg_hashFunction)(key_type),
-        CPPOAHT::index_t arg_initialSize,
+        CPPOAHT::size_t arg_initialSize,
         bool arg_enableEntryCache
     ) {
 
         if (!CPPOAHT::Utils::isPrime(arg_initialSize))
             arg_initialSize = CPPOAHT::Utils::getNextPrime(arg_initialSize);
-        this->entries = new CPPOAHT::Entry<key_type, value_type>[arg_initialSize];
+        
+        this->entries.resize(arg_initialSize);
+        
         this->qht_updateSize(arg_initialSize);
         this->qht_entryCache = arg_enableEntryCache;
         this->qht_hashFunction = arg_hashFunction;
@@ -126,7 +130,7 @@ namespace CPPOAHT {
 
         }
 
-        delete[] this->entries;
+        //delete[] this->entries;
 
     }
 
@@ -225,21 +229,7 @@ namespace CPPOAHT {
          * the prime number table's size approach. */
 
         new_size = CPPOAHT::Utils::getNextPrime(new_size);
-        CPPOAHT::Entry<key_type, value_type> *newEntries = new CPPOAHT::Entry<key_type, value_type>[new_size];
-
-        /* Source's "from" address (here we want the
-         * array's base/start address), source's "to" address
-         * (here we'll copying the entire array), and finally
-         * the destination array address (we also want the
-         * destination base/start address too). */
-
-        std::copy(this->entries, ( this->entries + this->getSize() ), newEntries);
-
-        /* Deallocs the old address and reasign
-         * the table to the new one. */
-
-        delete[] this->entries;
-        this->entries = newEntries;
+        this->entries.resize(new_size);
 
         // Update the table's size and residues count to match new size.
 
