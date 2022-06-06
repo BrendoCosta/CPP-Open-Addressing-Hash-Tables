@@ -61,7 +61,6 @@ namespace CPPOAHT {
 
         private:
 
-            CPPOAHT::index_t size = 0;
             CPPOAHT::index_t keysCount = 0;
             CPPOAHT::index_t (*qht_hashFunction)(key_type);
             
