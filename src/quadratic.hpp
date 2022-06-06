@@ -46,8 +46,6 @@
 
 namespace CPPOAHT {
 
-    const CPPOAHT::index_t DEFAULT_TABLE_START_INDEX = 1;
-
     template <typename key_type, typename value_type>
     class QuadHashTable : public HashTable <key_type, value_type> {
 
@@ -171,12 +169,6 @@ namespace CPPOAHT {
                 iteration number; */
 
     QHTFN(CPPOAHT::index_t)::qht_probe(CPPOAHT::index_t inputPosition, CPPOAHT::index_t iteration) {
-
-        if (inputPosition < CPPOAHT::DEFAULT_TABLE_START_INDEX) {
-
-            inputPosition = CPPOAHT::DEFAULT_TABLE_START_INDEX;
-
-        }
 
         return ( inputPosition + (iteration * iteration) ) % this->getSize();
 
