@@ -32,8 +32,8 @@
 #ifndef CPPOAHT_ENTRY_H
 #define CPPOAHT_ENTRY_H
 
-#include "entry.h"
-#include "types.h"
+#include "entry.hpp"
+#include "types.hpp"
 
 namespace CPPOAHT {
 
@@ -62,6 +62,16 @@ namespace CPPOAHT {
             value_type* value;
             uint8_t     state = UNALLOC;
 
+            // Get methods
+
+            bool isFull(void);
+            bool isEmpty(void);
+            bool isUnallocated(void);
+            key_type getKey(void);
+            value_type getValue(void);
+
+            // Set methods
+
             void alloc(void);
             void dealloc(void);
 
@@ -71,6 +81,8 @@ namespace CPPOAHT {
 
     /* ---------------------------------------------------------------------- */
 
+    #define ENTFN(_RETURNTYPE) template <typename key_type, typename value_type> _RETURNTYPE Entry<key_type, value_type>
+
     template <typename key_type, typename value_type>
     Entry<key_type, value_type>::~Entry() {
 
@@ -78,8 +90,69 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void Entry<key_type, value_type>::alloc(void) {
+    // Get methos
+
+    ENTFN(bool)::isFull(void) {
+
+        if (this->state == FULL) {
+
+            return true;
+
+        } else { return false; }
+
+    }
+
+    ENTFN(bool)::isEmpty(void) {
+
+        if (this->state == EMPTY) {
+
+            return true;
+
+        } else { return false; }
+
+    }
+
+    ENTFN(bool)::isUnallocated(void) {
+
+        if (this->state == UNALLOC) {
+
+            return true;
+
+        } else { return false; }
+
+    }
+
+    ENTFN(key_type)::getKey(void) {
+
+        if (this->state == FULL) {
+
+            return *(this->key);
+
+        } else {
+
+            return (key_type) 0;
+
+        }
+
+    }
+
+    ENTFN(value_type)::getValue(void) {
+
+        if (this->state == FULL) {
+
+            return *(this->value);
+
+        } else {
+
+            return (value_type) 0;
+
+        }
+
+    }
+
+    // Set methos
+
+    ENTFN(void)::alloc(void) {
 
         if (this->state == UNALLOC) {
 
@@ -92,8 +165,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    void Entry<key_type, value_type>::dealloc(void) {
+    ENTFN(void)::dealloc(void) {
 
         if (this->state != UNALLOC) {
 
@@ -106,8 +178,7 @@ namespace CPPOAHT {
 
     }
 
-    template <typename key_type, typename value_type>
-    bool Entry<key_type, value_type>::assign(key_type key, value_type value) {
+    ENTFN(bool)::assign(key_type key, value_type value) {
 
         if (this->state != UNALLOC) {
 
@@ -127,7 +198,7 @@ namespace CPPOAHT {
         } else {
 
             // Fail
-
+            std::cout << "\nDEBUG: ENTRY NO ALLOC" << std::endl;
             return false;
 
         }

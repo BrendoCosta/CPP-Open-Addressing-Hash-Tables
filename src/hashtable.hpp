@@ -1,7 +1,7 @@
 /*
-    cppoaht_utils.h
+    hashtable.h
 
-    This header provides some useful functions's interfaces.
+    TODO.
 
     ------------------------------------------------------------------------------
 
@@ -29,59 +29,28 @@
 
 */
 
-#ifndef CPPOAHT_UTILS_H
-#define CPPOAHT_UTILS_H
+#ifndef CPPOAHT_HASHTABLE_H
+#define CPPOAHT_HASHTABLE_H
+
+#include "types.hpp"
 
 namespace CPPOAHT {
 
-    template <typename integer_type>
-    bool isPrime(integer_type number);
+    template <typename key_type, typename value_type>
+    class HashTable {
 
-    template <typename integer_type>
-    integer_type nextPrime(integer_type number);
+        public:
 
-    /* ---------------------------------------------------------------------- */
+            virtual CPPOAHT::index_t getSize(void) = 0;
+            virtual CPPOAHT::index_t getKeysCount(void) = 0;
+            virtual CPPOAHT::float_t getLoadFactor(void) = 0;
 
-    template <typename integer_type>
-    bool isPrime(integer_type number) {
+            virtual void insert(key_type key, value_type value) = 0;
+            virtual void remove(key_type key) = 0;
+            virtual value_type find(key_type key) = 0;
 
-        if (number == 2) return true;
-
-        if (number == 1 || number % 2 == 0) return false;
-
-        for (integer_type i = 3; (i * i) < number + 1; i += 2) {
-
-            if (number % i == 0) return false;
-
-        }
-
-        return true;
-
-    }
-
-    /* --- */
-
-    template <typename integer_type>
-    integer_type nextPrime(integer_type number) {
-
-        if (number <= 1) {
-
-                return 2;
-
-        } else {
-
-            while (!isPrime(number)) {
-
-                number++;
-
-            }
-
-            return number;
-
-        }
-
-    }
+    };
 
 }
 
-#endif // CPPOAHT_UTILS_H
+#endif // CPPOAHT_HASHTABLE_H

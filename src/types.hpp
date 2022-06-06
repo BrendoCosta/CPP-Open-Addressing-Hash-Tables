@@ -1,7 +1,7 @@
 /*
-    hashtable.h
+    cppoaht_types.h
 
-    TODO.
+    This header provides the lib's quadratic probing hash table interface.
 
     ------------------------------------------------------------------------------
 
@@ -29,28 +29,17 @@
 
 */
 
-#ifndef CPPOAHT_HASHTABLE_H
-#define CPPOAHT_HASHTABLE_H
+#ifndef CPPOAHT_TYPES_H
+#define CPPOAHT_TYPES_H
 
-#include "types.h"
+#include <cstdint>
 
 namespace CPPOAHT {
 
-    template <typename key_type, typename value_type>
-    class HashTable {
-
-        public:
-
-            virtual CPPOAHT::index_t getSize(void) = 0;
-            virtual CPPOAHT::index_t getKeysCount(void) = 0;
-            virtual CPPOAHT::float_t getLoadFactor(void) = 0;
-
-            virtual void insert(key_type key, value_type value) = 0;
-            virtual void remove(key_type key) = 0;
-            virtual void find(key_type key) = 0;
-
-    };
-
+    using index_t = std::uintmax_t;
+    using float_t = float;
+    using byte_t  = std::uint8_t;
+    using size_t  = std::size_t;
 }
 
-#endif // CPPOAHT_HASHTABLE_H
+#endif // CPPOAHT_TYPES_H
