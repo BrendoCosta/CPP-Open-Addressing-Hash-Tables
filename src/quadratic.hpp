@@ -101,7 +101,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::QuadHashTable(
         CPPOAHT::index_t (*arg_hashFunction)(key_type),
-        CPPOAHT::size_t arg_initialSize,
+        CPPOAHT::index_t arg_initialSize,
         bool arg_enableEntryCache
     ) {
 
