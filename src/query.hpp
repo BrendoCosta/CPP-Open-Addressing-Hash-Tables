@@ -164,7 +164,6 @@ namespace CPPOAHT {
 
         if ( this->storedEntry.isUnallocated() ) this->storedEntry.alloc();
         this->storedEntry.assign(key, value);
-        std::cout << "\nDEBUG K: " << key << " V: " << value << std::endl;
 
     }
 

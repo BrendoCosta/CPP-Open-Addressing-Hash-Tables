@@ -64,8 +64,7 @@ namespace CPPOAHT {
         private:
 
             CPPOAHT::index_t size = 0;
-            CPPOAHT::index_t keys_count = 0;
-            CPPOAHT::index_t residues = 0;
+            CPPOAHT::index_t keysCount = 0;
             CPPOAHT::index_t (*qht_hashFunction)(key_type);
             
             std::vector< CPPOAHT::Entry<key_type, value_type> > entries;
@@ -78,7 +77,6 @@ namespace CPPOAHT {
             void qht_rehash(CPPOAHT::index_t new_size);
             CPPOAHT::Query<key_type, value_type> qht_remove(key_type key);
             CPPOAHT::Query<key_type, value_type> qht_find(key_type key);
-            void qht_updateSize(CPPOAHT::index_t new_size);
 
             bool qht_entryCache;
 
@@ -87,8 +85,8 @@ namespace CPPOAHT {
             CPPOAHT::index_t getSize(void);
             CPPOAHT::index_t getKeysCount(void);
             CPPOAHT::float_t getLoadFactor(void);
+            CPPOAHT::index_t getResidues(void);
 
-            CPPOAHT::float_t loadFactor(void);
             void insert(key_type key, value_type value);
             void remove(key_type key);
             value_type find(key_type key);
@@ -114,8 +112,6 @@ namespace CPPOAHT {
             arg_initialSize = CPPOAHT::Utils::getNextPrime(arg_initialSize);
         
         this->entries.resize(arg_initialSize);
-        
-        this->qht_updateSize(arg_initialSize);
         this->qht_entryCache = arg_enableEntryCache;
         this->qht_hashFunction = arg_hashFunction;
 
@@ -124,7 +120,7 @@ namespace CPPOAHT {
     template <typename key_type, typename value_type>
     QuadHashTable<key_type, value_type>::~QuadHashTable() {
 
-        for (CPPOAHT::index_t i = 0; i < this->size; i++) {
+        for (CPPOAHT::index_t i = 0; i < this->getSize(); i++) {
 
             this->entries[i].dealloc();
 
@@ -142,19 +138,25 @@ namespace CPPOAHT {
 
     QHTFN(CPPOAHT::index_t)::getSize(void) {
 
-        return this->size;
+        return this->entries.capacity();
 
     }
 
     QHTFN(CPPOAHT::index_t)::getKeysCount(void) {
 
-        return this->keys_count;
+        return this->keysCount;
 
     }
 
     QHTFN(CPPOAHT::float_t)::getLoadFactor(void) {
 
         return ( this->getKeysCount() / ( (float) this->getSize() ) );
+
+    }
+
+    QHTFN(CPPOAHT::index_t)::getResidues(void) {
+
+        return ( ( this->getSize() + 1 ) / 2 );
 
     }
 
@@ -176,7 +178,7 @@ namespace CPPOAHT {
 
         }
 
-        return ( inputPosition + (iteration * iteration) ) % this->size;
+        return ( inputPosition + (iteration * iteration) ) % this->getSize();
 
     }
 
@@ -186,7 +188,7 @@ namespace CPPOAHT {
         CPPOAHT::index_t probingPosition = 0;
         CPPOAHT::Query<key_type, value_type> returnQuery;
 
-        for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
+        for (CPPOAHT::index_t i = 0; i < this->getResidues(); i++) {
 
             // Position probing
 
@@ -231,10 +233,6 @@ namespace CPPOAHT {
         new_size = CPPOAHT::Utils::getNextPrime(new_size);
         this->entries.resize(new_size);
 
-        // Update the table's size and residues count to match new size.
-
-        this->qht_updateSize(new_size);
-
         /* Finally reorganize all entries to match the
          * new residues / avaliable probing positions of
          * the new table's size */
@@ -262,7 +260,7 @@ namespace CPPOAHT {
         CPPOAHT::index_t probingPosition = 0;
         CPPOAHT::Query<key_type, value_type> returnQuery;
 
-        for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
+        for (CPPOAHT::index_t i = 0; i < this->getResidues(); i++) {
 
             // Position probing
             probingPosition = this->qht_probe(hashPosition, i);
@@ -278,8 +276,6 @@ namespace CPPOAHT {
 
                 // Key and value memory deallocation
                 this->entries[probingPosition].dealloc();
-                // Table's key count update
-                this->keys_count -= 1;
 
                 break;
 
@@ -297,7 +293,7 @@ namespace CPPOAHT {
         CPPOAHT::index_t probingPosition  = 0;
         CPPOAHT::Query<key_type, value_type> returnQuery;
         
-        for (CPPOAHT::index_t i = 0; i < this->residues; i++) {
+        for (CPPOAHT::index_t i = 0; i < this->getResidues(); i++) {
 
             // Position probing
             probingPosition = this->qht_probe(hashPosition, i);
@@ -315,22 +311,9 @@ namespace CPPOAHT {
 
     }
 
-    QHTFN(void)::qht_updateSize(CPPOAHT::index_t new_size) {
-
-        this->size = new_size;
-        this->residues = ( ( new_size + 1 ) / 2 );
-
-    }
-
     // -------------------------------------------------------------------------
     //                             Public methods
     // -------------------------------------------------------------------------
-
-    QHTFN(CPPOAHT::float_t)::loadFactor(void) {
-
-        return ( this->keys_count / ( (float) this->size) );
-
-    }
 
     QHTFN(void)::insert(key_type key, value_type value) {
 
@@ -338,13 +321,13 @@ namespace CPPOAHT {
 
         if (query.isValid()) {
 
-            // Table's key count update
+            // Update keys' count
 
-            this->keys_count += 1;
+            this->keysCount++;
 
             // Rehash if necessary
 
-            if (this->getLoadFactor() > 0.5) this->qht_rehash(this->size * 2);
+            if (this->getLoadFactor() > 0.5) this->qht_rehash(this->getSize() * 2);
 
         }
 
@@ -358,8 +341,9 @@ namespace CPPOAHT {
 
         if (query.isValid()) {
 
-            CPPOAHT::Entry<key_type, value_type> ab = query.getQueryEntry();
-            std::cout << "\nREMOVE A: " << ab.getKey() << " B: " << ab.getValue() << std::endl;
+            // Update keys' count
+
+            this->keysCount--;
 
         } else {
 
@@ -392,7 +376,7 @@ namespace CPPOAHT {
 
         std::cout << "\nIND  STS  KEY  VAL" << std::endl;
 
-        for (CPPOAHT::index_t i = 0; i < this->size; i++) {
+        for (CPPOAHT::index_t i = 0; i < this->getSize(); i++) {
 
             if (this->entries[i].state == CPPOAHT::Entry<key_type, value_type>::FULL) {
 
@@ -405,7 +389,7 @@ namespace CPPOAHT {
             }
         }
 
-        std::cout << "\nLOAD FACTOR: " << this->loadFactor() << std::endl;
+        std::cout << "\nLOAD FACTOR: " << this->getLoadFactor() << std::endl;
 
         return;
 
